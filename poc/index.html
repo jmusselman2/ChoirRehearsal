@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<!-- Rehearsal player proof of concept. Throwaway code: see README.md. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rehearsal PoC</title>
+<style>
+  :root { color-scheme: light dark; --accent: #2a6ad1; --err: #d22; --warn: #c80; }
+  * { box-sizing: border-box; }
+  body { margin: 0 auto; padding: 12px; max-width: 900px; font: 16px/1.4 system-ui, sans-serif; }
+  h1 { font-size: 1.2rem; margin: 0 0 8px; }
+  button, select { min-height: 48px; min-width: 48px; padding: 0 12px; font-size: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+  .row > * { flex: 0 1 auto; }
+  #tracks button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  audio { display: block; width: 100%; margin: 8px 0; }
+  #banner { background: var(--err); color: #fff; padding: 12px; font-weight: bold; }
+  #loopReadout { font-variant-numeric: tabular-nums; }
+  #log { list-style: none; margin: 0; padding: 0; max-height: 50vh; overflow: auto;
+         font: 12px/1.35 ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
+  #log li { padding: 2px 0; border-bottom: 1px solid #8884; }
+  #log .err { color: var(--err); }
+  #log .wrap { color: var(--warn); }
+  #log .mark { font-weight: bold; }
+  #logText { width: 100%; height: 8em; font: 12px ui-monospace, monospace; }
+  #follow { border-top: 1px solid #8886; border-bottom: 1px solid #8886; padding: 4px 0; }
+  #modes button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  #lyrics { position: relative; list-style: none; margin: 8px 0; padding: 0; max-height: 9.5em; overflow: auto; }
+  #lyrics li { padding: 4px 8px; border-radius: 4px; }
+  #lyrics li.current { background: var(--accent); color: #fff; font-weight: bold; }
+  #scoreWrap { position: relative; margin: 8px 0; line-height: 0; }
+  #scoreImg { display: block; width: 100%; max-width: 100%; height: auto; background: #fff; }
+  #scoreBox { position: absolute; border: 3px solid var(--accent); background: #2a6ad11f;
+              border-radius: 4px; pointer-events: none; transition: top .2s, left .2s, width .2s, height .2s; }
+</style>
+</head>
+<body>
+<div id="banner" hidden></div>
+<h1>Rehearsal PoC</h1>
+
+<div id="tracks" class="row"></div>
+
+<audio id="audio" controls preload="metadata"></audio>
+
+<div class="row">
+  <button id="prev" type="button">Prev</button>
+  <button id="back5" type="button">&minus;5&nbsp;s</button>
+  <button id="fwd5" type="button">+5&nbsp;s</button>
+  <button id="next" type="button">Next</button>
+  <label>Speed
+    <select id="speed">
+      <option value="0.75">0.75&times;</option>
+      <option value="0.85">0.85&times;</option>
+      <option value="1" selected>1.0&times;</option>
+      <option value="1.1">1.1&times;</option>
+    </select>
+  </label>
+</div>
+
+<div class="row">
+  <button id="setA" type="button">A</button>
+  <button id="setB" type="button">B</button>
+  <button id="clearLoop" type="button">Clear</button>
+  <span id="loopReadout">Loop off</span>
+</div>
+
+<section id="follow" hidden>
+  <div id="modes" class="row">
+    <button type="button" data-mode="lyrics">Lyrics</button>
+    <button type="button" data-mode="score">Score</button>
+    <button type="button" data-mode="both" aria-pressed="true">Both</button>
+  </div>
+  <p id="followMsg" hidden></p>
+  <ol id="lyrics"></ol>
+  <div id="scoreWrap">
+    <img id="scoreImg" alt="Score page">
+    <div id="scoreBox" hidden></div>
+  </div>
+</section>
+
+<div class="row">
+  <button id="mark" type="button">Mark</button>
+  <button id="copyLog" type="button">Copy log</button>
+</div>
+<textarea id="logText" hidden readonly></textarea>
+<ol id="log"></ol>
+
+<script>
+  // Bootstrap: collect errors that happen before the main script runs
+  // (including a broken config.js) so they reach the on-screen log.
+  window.__early = [];
+  window.__pocLog = function (msg, cls) { window.__early.push([new Date(), msg, cls]); };
+  window.addEventListener('error', function (e) {
+    window.__pocLog('JS error: ' + e.message + ' (' + (e.filename || '?') + ':' + e.lineno + ')', 'err');
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    window.__pocLog('Unhandled rejection: ' + (e.reason && e.reason.message || e.reason), 'err');
+  });
+  window.__configFailed = false;
+</script>
+<script src="config.js" onerror="window.__configFailed = true"></script>
+<script>
+(function () {
+  'use strict';
+
+  var MAX_LOG = 200;
+  var audio = document.getElementById('audio');
+  var logEl = document.getElementById('log');
+  var logLines = [];
+
+  function $(id) { return document.getElementById(id); }
+  function pad(n, w) { return String(n).padStart(w || 2, '0'); }
+  function fmt(t) { return (t == null || !isFinite(t)) ? '--' : t.toFixed(2); }
+
+  // ---- Event log: newest first, capped, wall clock + media time ----
+  function log(msg, cls, when) {
+    var d = when || new Date();
+    var line = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' +
+      pad(d.getMilliseconds(), 3) + ' | ' + fmt(audio.currentTime).padStart(7) + ' | ' + msg +
+      (document.hidden ? ' [hidden]' : '');
+    logLines.unshift(line);
+    if (logLines.length > MAX_LOG) logLines.length = MAX_LOG;
+    var li = document.createElement('li');
+    li.textContent = line;
+    if (cls) li.className = cls;
+    logEl.insertBefore(li, logEl.firstChild);
+    while (logEl.children.length > MAX_LOG) logEl.removeChild(logEl.lastChild);
+  }
+  window.__pocLog = log;
+  window.__early.forEach(function (e) { log(e[1], e[2], e[0]); });
+  window.__early = [];
+
+  function banner(msg) {
+    var b = $('banner');
+    b.textContent = msg;
+    b.hidden = false;
+  }
+
+  // ---- Config ----
+  var CONFIG = window.CONFIG;
+  var configProblem = window.__configFailed ? 'config.js failed to load (missing file?)'
+    : !CONFIG ? 'config.js loaded but window.CONFIG is missing (syntax error? see log)'
+    : !Array.isArray(CONFIG.tracks) || !CONFIG.tracks.length ? 'CONFIG.tracks is empty'
+    : null;
+  if (configProblem) {
+    banner('Config problem: ' + configProblem + '. Copy config.example.js to config.js next to index.html.');
+    log('CONFIG ERROR: ' + configProblem, 'err');
+    Array.prototype.forEach.call(document.querySelectorAll('button:not(#copyLog), select'), function (el) {
+      el.disabled = true;
+    });
+    wireCopyLog();
+    return;
+  }
+
+  var tracks = CONFIG.tracks;
+  var idx = 0;
+  var rate = 1;
+  var loopA = null, loopB = null;
+  var lastT = 0;             // currentTime at the previous timeupdate (reset on seeked)
+  var loopSeekTarget = null; // where the loop last seeked to, so its own seeks aren't logged as user seeks
+  var userSeek = false;      // true from a user seek's "seeking" until its "seeked"
+
+  // ---- Media Session ----
+  var ms = ('mediaSession' in navigator) ? navigator.mediaSession : null;
+  if (!ms) log('Media Session API not available (needs HTTPS or localhost)', 'err');
+
+  function setMetadata(tr) {
+    if (!ms) return;
+    try {
+      ms.metadata = new MediaMetadata({ title: tr.title, artist: CONFIG.artist || '', album: 'Rehearsal PoC' });
+    } catch (e) {
+      log('MediaMetadata failed: ' + e.message, 'err');
+    }
+  }
+
+  function updatePositionState(why) {
+    if (!ms || !ms.setPositionState) return;
+    var d = audio.duration;
+    if (!isFinite(d) || d <= 0) return;
+    try {
+      ms.setPositionState({
+        duration: d,
+        playbackRate: audio.playbackRate,
+        position: Math.min(Math.max(audio.currentTime, 0), d)
+      });
+    } catch (e) {
+      log('setPositionState failed (' + why + '): ' + e.message, 'err');
+    }
+  }
+
+  function action(name, fn) {
+    if (!ms) return;
+    try {
+      ms.setActionHandler(name, function (details) {
+        var extra = '';
+        if (details && details.seekTime != null) extra += ' ' + fmt(details.seekTime);
+        if (details && details.seekOffset != null) extra += ' offset ' + details.seekOffset;
+        if (details && details.fastSeek) extra += ' (fastSeek)';
+        log('MS action: ' + name + extra);
+        fn(details || {});
+      });
+    } catch (e) {
+      log('setActionHandler(' + name + ') not supported: ' + e.message, 'err');
+    }
+  }
+
+  // ---- Playback helpers ----
+  function doPlay() {
+    var p = audio.play();
+    if (p && p.catch) p.catch(function (e) { log('play() rejected: ' + e.name + ': ' + e.message, 'err'); });
+  }
+
+  function seekTo(t) {
+    var d = isFinite(audio.duration) ? audio.duration : Infinity;
+    audio.currentTime = Math.min(Math.max(t, 0), d);
+  }
+
+  function applyRate() {
+    audio.defaultPlaybackRate = rate;
+    audio.playbackRate = rate;
+  }
+
+  function loadTrack(i, autoplay) {
+    idx = (i + tracks.length) % tracks.length;
+    var tr = tracks[idx];
+    clearLoop(true);
+    loopSeekTarget = null;
+    userSeek = false;
+    audio.src = tr.src;
+    // Set both rates after src, or the load algorithm resets the speed.
+    applyRate();
+    if ('preservesPitch' in audio) audio.preservesPitch = true;
+    lastT = 0;
+    Array.prototype.forEach.call($('tracks').children, function (b, j) {
+      b.setAttribute('aria-pressed', j === idx ? 'true' : 'false');
+    });
+    setMetadata(tr);
+    log('load track ' + (idx + 1) + ': ' + tr.title + ' (' + tr.src + ')');
+    followTrack(tr);
+    if (autoplay) doPlay();
+  }
+
+  function next() { loadTrack(idx + 1, true); }   // wraps last -> first
+
+  function prev() {
+    if (audio.currentTime > 3) {
+      seekTo(0);
+      log('prev: restart track');
+    } else {
+      loadTrack(idx - 1, true);
+    }
+  }
+
+  // ---- A-B loop ----
+  function loopReadout() {
+    $('loopReadout').textContent = (loopA == null && loopB == null) ? 'Loop off'
+      : 'A ' + fmt(loopA) + ' → B ' + fmt(loopB) + (loopB != null ? ' (on)' : '');
+  }
+
+  function setA() {
+    loopA = audio.currentTime;
+    if (loopB != null && loopB <= loopA) {
+      loopB = null;
+      log('B cleared (was at or before new A)');
+    }
+    log('A = ' + fmt(loopA));
+    loopReadout();
+  }
+
+  function setB() {
+    var t = audio.currentTime;
+    if (loopA == null) { log('B refused: set A first', 'err'); return; }
+    if (t <= loopA) { log('B refused: ' + fmt(t) + ' is not after A ' + fmt(loopA), 'err'); return; }
+    loopB = t;
+    log('B = ' + fmt(loopB) + ', loop on (' + (loopB - loopA).toFixed(2) + ' s); jumping to A');
+    loopReadout();
+    loopSeek();
+  }
+
+  function loopSeek() {
+    seekTo(loopA);
+    loopSeekTarget = audio.currentTime;
+    lastT = loopSeekTarget;
+  }
+
+  function clearLoop(silent) {
+    var had = loopA != null || loopB != null;
+    loopA = loopB = null;
+    loopReadout();
+    if (had && !silent) log('loop cleared');
+  }
+
+  // ---- Follow-along (panel shown only with ?follow=1) ----
+  var followOn = new URLSearchParams(location.search).get('follow') === '1';
+  var follow = null;            // CONFIG.follow entry for the current track, if any
+  var curLine = -1, curSection = -1;
+  var mode = 'both';
+  var lyricsEl = $('lyrics'), scoreWrap = $('scoreWrap'), scoreImg = $('scoreImg'), scoreBox = $('scoreBox');
+
+  if (followOn) $('follow').hidden = false;
+
+  scoreImg.addEventListener('error', function () {
+    log('score image failed to load: ' + scoreImg.getAttribute('src'), 'err');
+  });
+  scoreImg.addEventListener('load', function () {
+    log('score image loaded: ' + scoreImg.getAttribute('src') +
+      ' (' + scoreImg.naturalWidth + '×' + scoreImg.naturalHeight + ')');
+  });
+
+  // Index of the last item whose start time is <= t, or -1. Items are sorted by t.
+  function lastAtOrBefore(items, t) {
+    var i = -1;
+    for (var j = 0; j < items.length && items[j].t <= t; j++) i = j;
+    return i;
+  }
+
+  function scrollLyric() {
+    var li = lyricsEl.children[curLine];
+    if (li && !lyricsEl.hidden) lyricsEl.scrollTop = li.offsetTop - (lyricsEl.clientHeight - li.offsetHeight) / 2;
+  }
+
+  function applyMode() {
+    var hasLyrics = !!(follow && follow.lyrics && follow.lyrics.length);
+    var hasScore = !!(follow && follow.score && follow.score.image);
+    lyricsEl.hidden = !hasLyrics || mode === 'score';
+    scoreWrap.hidden = !hasScore || mode === 'lyrics';
+    Array.prototype.forEach.call($('modes').children, function (b) {
+      b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false');
+    });
+    scrollLyric();
+  }
+
+  function followTrack(tr) {
+    if (!followOn) return;
+    follow = (CONFIG.follow && CONFIG.follow[tr.id]) || null;
+    curLine = curSection = -1;
+    lyricsEl.textContent = '';
+    scoreBox.hidden = true;
+    $('followMsg').textContent = 'No follow-along data for this track.';
+    $('followMsg').hidden = !!follow;
+    if (follow && follow.lyrics) {
+      follow.lyrics.forEach(function (l) {
+        var li = document.createElement('li');
+        li.textContent = l.text;
+        lyricsEl.appendChild(li);
+      });
+    }
+    if (follow && follow.score && follow.score.image && scoreImg.getAttribute('src') !== follow.score.image) {
+      scoreImg.src = follow.score.image;
+    }
+    applyMode();
+    followUpdate();
+  }
+
+  function followUpdate() {
+    if (!followOn || !follow) return;
+    var t = audio.currentTime;
+    if (follow.lyrics) {
+      var i = lastAtOrBefore(follow.lyrics, t);
+      if (i !== curLine) {
+        if (lyricsEl.children[curLine]) lyricsEl.children[curLine].classList.remove('current');
+        curLine = i;
+        if (lyricsEl.children[i]) lyricsEl.children[i].classList.add('current');
+        scrollLyric();
+      }
+    }
+    var secs = follow.score && follow.score.sections;
+    if (secs) {
+      var k = lastAtOrBefore(secs, t);
+      if (k !== curSection) {
+        curSection = k;
+        scoreBox.hidden = k < 0;
+        if (k >= 0) {
+          scoreBox.style.left = secs[k].x + '%';
+          scoreBox.style.top = secs[k].y + '%';
+          scoreBox.style.width = secs[k].w + '%';
+          scoreBox.style.height = secs[k].h + '%';
+        }
+      }
+    }
+  }
+
+  Array.prototype.forEach.call($('modes').children, function (b) {
+    b.addEventListener('click', function () { mode = b.dataset.mode; applyMode(); });
+  });
+
+  // ---- Media element events ----
+  audio.addEventListener('timeupdate', function () {
+    var t = audio.currentTime;
+    if (loopB != null && t >= loopB) {
+      if (lastT < loopB && !userSeek && !audio.seeking) {
+        log('wrap overshoot +' + (t - loopB).toFixed(3) + ' s (t ' + fmt(t) + ', B ' + fmt(loopB) + ')', 'wrap');
+      } else {
+        log('seek past B → A', 'wrap');
+      }
+      loopSeek();
+      followUpdate();
+      return;
+    }
+    lastT = t;
+    followUpdate();
+  });
+
+  // timeupdate fires before seeked, so a user seek is flagged here, at "seeking".
+  audio.addEventListener('seeking', function () {
+    if (loopSeekTarget != null && Math.abs(audio.currentTime - loopSeekTarget) < 0.005) return;
+    userSeek = true;
+    log('seek to ' + fmt(audio.currentTime));
+  });
+
+  audio.addEventListener('seeked', function () {
+    lastT = audio.currentTime;
+    userSeek = false;
+    updatePositionState('seeked');
+    followUpdate();
+  });
+
+  audio.addEventListener('ended', function () {
+    if (loopB != null) {
+      log('ended while looping → A', 'wrap');
+      loopSeek();
+      doPlay();
+      return;
+    }
+    if (idx < tracks.length - 1) {
+      log('ended → next track');
+      next();
+    } else {
+      log('ended: end of list, stopping');
+    }
+  });
+
+  audio.addEventListener('loadedmetadata', function () {
+    log('loadedmetadata: duration ' + fmt(audio.duration) + ' s, rate ' + audio.playbackRate);
+    if (audio.playbackRate !== rate) {
+      log('rate was reset to ' + audio.playbackRate + ', reapplying ' + rate, 'err');
+      applyRate();
+    }
+    updatePositionState('loadedmetadata');
+  });
+
+  audio.addEventListener('durationchange', function () { updatePositionState('durationchange'); });
+
+  audio.addEventListener('ratechange', function () {
+    log('ratechange: ' + audio.playbackRate + ' (default ' + audio.defaultPlaybackRate + ')');
+    updatePositionState('ratechange');
+  });
+
+  audio.addEventListener('play', function () { log('play'); if (ms) ms.playbackState = 'playing'; });
+  audio.addEventListener('playing', function () { log('playing'); });
+  audio.addEventListener('pause', function () { log('pause'); if (ms) ms.playbackState = 'paused'; });
+  audio.addEventListener('waiting', function () { log('waiting', 'wrap'); });
+  audio.addEventListener('stalled', function () { log('stalled', 'wrap'); });
+
+  audio.addEventListener('error', function () {
+    var e = audio.error;
+    var names = { 1: 'ABORTED', 2: 'NETWORK', 3: 'DECODE', 4: 'SRC_NOT_SUPPORTED' };
+    var msg = e ? e.code + ' ' + (names[e.code] || '') + (e.message ? ': ' + e.message : '') : 'unknown';
+    log('audio error ' + msg + ' for ' + audio.getAttribute('src') +
+      (e && e.code === 4 ? ' (file missing or not servable?)' : ''), 'err');
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    log('visibilitychange: ' + document.visibilityState);
+  });
+
+  // ---- Media Session handlers ----
+  action('play', function () { doPlay(); });
+  action('pause', function () { audio.pause(); });
+  action('previoustrack', function () { prev(); });
+  action('nexttrack', function () { next(); });
+  action('seekbackward', function (d) { seekTo(audio.currentTime - (d.seekOffset || 5)); });
+  action('seekforward', function (d) { seekTo(audio.currentTime + (d.seekOffset || 5)); });
+  action('seekto', function (d) {
+    if (d.seekTime == null) return;
+    if (d.fastSeek && 'fastSeek' in audio) audio.fastSeek(d.seekTime);
+    else seekTo(d.seekTime);
+  });
+
+  // ---- UI ----
+  tracks.forEach(function (tr, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = tr.title;
+    b.addEventListener('click', function () { loadTrack(i, true); });
+    $('tracks').appendChild(b);
+  });
+
+  $('prev').addEventListener('click', prev);
+  $('next').addEventListener('click', next);
+  $('back5').addEventListener('click', function () { seekTo(audio.currentTime - 5); });
+  $('fwd5').addEventListener('click', function () { seekTo(audio.currentTime + 5); });
+  $('speed').addEventListener('change', function () {
+    rate = parseFloat(this.value);
+    applyRate();
+  });
+  $('setA').addEventListener('click', setA);
+  $('setB').addEventListener('click', setB);
+  $('clearLoop').addEventListener('click', function () { clearLoop(false); });
+  $('mark').addEventListener('click', function () {
+    log('{t: ' + audio.currentTime.toFixed(2) + '},', 'mark');
+  });
+  wireCopyLog();
+
+  function wireCopyLog() {
+    $('copyLog').addEventListener('click', function () {
+      var text = logLines.slice().reverse().join('\n');   // oldest first reads better in a message
+      var ta = $('logText');
+      function fallback() {
+        ta.value = text;
+        ta.hidden = false;
+        ta.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) { /* ignore */ }
+        log(ok ? 'log copied (' + logLines.length + ' entries)' : 'copy failed: select the text box and copy by hand', ok ? '' : 'err');
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          ta.hidden = true;
+          log('log copied (' + logLines.length + ' entries)');
+        }, fallback);
+      } else {
+        fallback();
+      }
+    });
+  }
+
+  log('page loaded; ' + tracks.length + ' tracks; ' + (window.isSecureContext ? 'secure context' : 'NOT a secure context'));
+  loadTrack(0, false);
+})();
+</script>
+</body>
+</html>
