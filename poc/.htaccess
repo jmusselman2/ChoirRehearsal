@@ -1,0 +1,7 @@
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+AddType audio/mpeg .mp3
+AddType image/svg+xml .svg
