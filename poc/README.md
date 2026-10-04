@@ -1,8 +1,11 @@
 # Rehearsal player: proof of concept
 
 Throwaway single page that tests whether a plain web page can give reliable
-Android background playback, lock-screen controls, A–B looping and follow-along.
+Android background playback, lock-screen controls, loop wrap accuracy and follow-along.
 The findings carry forward; this code doesn't.
+
+Tap-to-set A–B looping is dropped from the product (see [docs/spec.md](../docs/spec.md)).
+The PoC now loops over named ranges from config and measures how cleanly they wrap.
 
 Everything the page needs at runtime is inside `poc/`, so its contents upload as-is.
 
@@ -10,9 +13,10 @@ Everything the page needs at runtime is inside `poc/`, so its contents upload as
 | ------------------------------- | ---------------------------------------------------------- | ------------------- |
 | `index.html`                    | The PoC page (CSS and JS inline)                           | yes                 |
 | `smoke.html`                    | Checkpoint 1: just `<audio controls>` on test1             | yes                 |
-| `config.example.js`             | Mock `CONFIG` (titles, lyrics, score sections)             | yes                 |
+| `config.example.js`             | Mock `CONFIG` (titles, loops, lyrics, score sections)      | yes                 |
 | `config.js`                     | Your live `CONFIG`, copied from the example                | **no** (gitignored) |
 | `mock/score-placeholder.svg`    | Fake score page with 5 empty systems                       | yes                 |
+| `mock/artwork.png`              | 512×512 lock-screen artwork (dark tile, steel-blue note)   | yes                 |
 | `score/`                        | Real score images                                          | **no** (gitignored) |
 | `audio/test1.mp3` … `test4.mp3` | Copies of the repo-root `audio/` files                     | **no** (gitignored) |
 | `sync-media.ps1`                | Copies the MP3s into `poc/audio/`                          | yes                 |
@@ -63,7 +67,8 @@ All song-specific values live in `poc/config.js`.
 Every mock value is marked `// TODO: replace`.
 Edit `config.js`, not the example, because real lyrics must stay out of the public repo.
 
-1. **Titles and artist.** Edit `tracks[].title` and `artist`.
+1. **Titles, artist and album.** Edit `tracks[].title`, `artist` and `album`.
+   `artwork` points at `mock/artwork.png` by default.
 2. **Score image.** Put the real page image (PNG/JPG/SVG) in `poc/score/`,
    for example `poc/score/test1-p1.png`, and set `follow.test1.score.image`
    to `"score/test1-p1.png"`.
@@ -73,10 +78,21 @@ Edit `config.js`, not the example, because real lyrics must stay out of the publ
    Tap **Copy log** and paste the times into `follow.test1.lyrics[].t`
    and `follow.test1.score.sections[].t`.
 4. **Lyric text.** Replace `"Lyric line N"` with the real lines.
-5. **Section boxes.** `x`, `y`, `w`, `h` are percentages of the image's
+5. **Loops.** `loops` is keyed by track id. Each loop is `{name, from, to, note}`,
+   with `from` and `to` in seconds of media time.
+   Use **Mark** at the loop's start and end to get the times.
+6. **Section boxes.** `x`, `y`, `w`, `h` are percentages of the image's
    width and height (top-left origin).
    Measure each system on the real image in any image editor:
    `x = left / imageWidth × 100`, and so on.
+
+`continueToNext` sets what happens when a track ends: `false` (the default) stops,
+`true` plays the next track.
+The **Continue to next song** checkbox starts from this value and can be flipped while testing.
+
+`album`, `artwork`, `continueToNext` and `loops` are all optional.
+An older `config.js` without them still works: no loops, the default album and artwork,
+and continue-to-next off.
 
 If `config.js` is missing or broken, the page shows a red banner and the event log says why.
 A missing MP3 or score image shows up as an error line in the log.
@@ -92,6 +108,7 @@ smoke.html
 config.js
 .htaccess
 mock/score-placeholder.svg
+mock/artwork.png
 audio/test1.mp3
 audio/test2.mp3
 audio/test3.mp3
@@ -121,14 +138,21 @@ Fix that first.
   Each line is `wall clock | media time | event`.
   Lines logged while the page was hidden (screen off or another app in front)
   end in `[hidden]`.
-- Loop lines:
+- Loops: tap a loop button to jump to its start and play; **Stop** ends it.
+  Changing track stops the loop too.
+  In the log, A is the loop's start and B is its end:
   - `wrap overshoot +0.xxx s` is a natural wrap at B,
     and shows how far past B playback got before jumping back.
   - `seek past B → A` means you scrubbed past B yourself.
     It isn't an overshoot.
+- **−10 s / +10 s** and the lock-screen seek buttons skip 10 s.
+  If the system passes its own seek offset, the log shows it and the page uses it.
 - **Prev** restarts the track if you're more than 3 s in; otherwise it goes to the previous track.
   **Next** wraps from track 4 to track 1.
-  Auto-advance at the end of a track stops after track 4.
+  The lock-screen previous/next buttons do the same.
+- At the end of a track, playback stops unless **Continue to next song** is on.
+  With it on, playback advances and stops after track 4.
+- Lock-screen metadata (title, artist, album, artwork) is set once per track and doesn't change during it.
 - **Row 8 (seek accuracy)** is a seek-consistency check on test1 only.
   Seek to the same lyric three times and compare the displayed time.
   The files are already CBR, so there's no separate CBR copy.

@@ -5,6 +5,16 @@
 
 window.CONFIG = {
   artist: "Tenor rehearsal", // TODO: replace
+  album: "Tenor Choir · Fall 2026",
+
+  // Lock-screen artwork. A PNG is more reliable than SVG on Android.
+  artwork: [
+    { src: "mock/artwork.png", sizes: "512x512", type: "image/png" }
+  ],
+
+  // What happens when a track ends: false stops, true plays the next track
+  // (stopping after the last). Prev/Next always step between tracks.
+  continueToNext: false,
 
   tracks: [
     { id: "test1", title: "Test 1", src: "audio/test1.mp3" }, // TODO: replace
@@ -12,6 +22,14 @@ window.CONFIG = {
     { id: "test3", title: "Test 3", src: "audio/test3.mp3" }, // TODO: replace
     { id: "test4", title: "Test 4", src: "audio/test4.mp3" }  // TODO: replace
   ],
+
+  // Practice loops, keyed by track id. from/to are seconds of media time.
+  loops: {
+    test1: [
+      { name: "Bridge entrance", from: 150.00, to: 167.00, note: "Count the rest, come in clean." }, // TODO: replace
+      { name: "Final hold",      from: 205.00, to: 220.00, note: "Hold through the fermata." }       // TODO: replace
+    ]
+  },
 
   // Follow-along data, keyed by track id.
   // Only test1 is wired up.

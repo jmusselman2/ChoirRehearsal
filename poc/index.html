@@ -14,7 +14,9 @@
   button, select { min-height: 48px; min-width: 48px; padding: 0 12px; font-size: 16px; }
   .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
   .row > * { flex: 0 1 auto; }
-  #tracks button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  #tracks button[aria-pressed="true"], #loops button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  label { display: inline-flex; align-items: center; gap: 6px; min-height: 48px; }
+  input[type="checkbox"] { width: 24px; height: 24px; margin: 0; }
   audio { display: block; width: 100%; margin: 8px 0; }
   #banner { background: var(--err); color: #fff; padding: 12px; font-weight: bold; }
   #loopReadout { font-variant-numeric: tabular-nums; }
@@ -46,8 +48,8 @@
 
 <div class="row">
   <button id="prev" type="button">Prev</button>
-  <button id="back5" type="button">&minus;5&nbsp;s</button>
-  <button id="fwd5" type="button">+5&nbsp;s</button>
+  <button id="back10" type="button">&minus;10&nbsp;s</button>
+  <button id="fwd10" type="button">+10&nbsp;s</button>
   <button id="next" type="button">Next</button>
   <label>Speed
     <select id="speed">
@@ -57,12 +59,12 @@
       <option value="1.1">1.1&times;</option>
     </select>
   </label>
+  <label><input id="continueNext" type="checkbox"> Continue to next song</label>
 </div>
 
+<div id="loops" class="row"></div>
 <div class="row">
-  <button id="setA" type="button">A</button>
-  <button id="setB" type="button">B</button>
-  <button id="clearLoop" type="button">Clear</button>
+  <button id="stopLoop" type="button">Stop</button>
   <span id="loopReadout">Loop off</span>
 </div>
 
@@ -147,7 +149,7 @@
   if (configProblem) {
     banner('Config problem: ' + configProblem + '. Copy config.example.js to config.js next to index.html.');
     log('CONFIG ERROR: ' + configProblem, 'err');
-    Array.prototype.forEach.call(document.querySelectorAll('button:not(#copyLog), select'), function (el) {
+    Array.prototype.forEach.call(document.querySelectorAll('button:not(#copyLog), select, input'), function (el) {
       el.disabled = true;
     });
     wireCopyLog();
@@ -157,8 +159,10 @@
   var tracks = CONFIG.tracks;
   var idx = 0;
   var rate = 1;
+  var continueToNext = CONFIG.continueToNext === true;
+  var activeLoop = null;     // CONFIG.loops entry currently looping, if any
   var loopA = null, loopB = null;
-  var lastT = 0;             // currentTime at the previous timeupdate (reset on seeked)
+  var lastT = 0;            // currentTime at the previous timeupdate (reset on seeked)
   var loopSeekTarget = null; // where the loop last seeked to, so its own seeks aren't logged as user seeks
   var userSeek = false;      // true from a user seek's "seeking" until its "seeked"
 
@@ -166,10 +170,19 @@
   var ms = ('mediaSession' in navigator) ? navigator.mediaSession : null;
   if (!ms) log('Media Session API not available (needs HTTPS or localhost)', 'err');
 
+  var DEFAULT_ALBUM = 'Tenor Choir · Fall 2026';
+  var DEFAULT_ARTWORK = [{ src: 'mock/artwork.png', sizes: '512x512', type: 'image/png' }];
+
+  // Set once per track (from loadTrack only): changing metadata mid-track can make Android redraw the notification.
   function setMetadata(tr) {
     if (!ms) return;
     try {
-      ms.metadata = new MediaMetadata({ title: tr.title, artist: CONFIG.artist || '', album: 'Rehearsal PoC' });
+      ms.metadata = new MediaMetadata({
+        title: tr.title,
+        artist: CONFIG.artist || '',
+        album: CONFIG.album || DEFAULT_ALBUM,
+        artwork: CONFIG.artwork || DEFAULT_ARTWORK
+      });
     } catch (e) {
       log('MediaMetadata failed: ' + e.message, 'err');
     }
@@ -253,30 +266,52 @@
     }
   }
 
-  // ---- A-B loop ----
+  // ---- Named loops (CONFIG.loops, keyed by track id). A = loop start, B = loop end. ----
+  function trackLoops() {
+    var all = CONFIG.loops || {};
+    return all[tracks[idx].id] || [];
+  }
+
   function loopReadout() {
-    $('loopReadout').textContent = (loopA == null && loopB == null) ? 'Loop off'
-      : 'A ' + fmt(loopA) + ' → B ' + fmt(loopB) + (loopB != null ? ' (on)' : '');
+    $('loopReadout').textContent = !activeLoop ? 'Loop off'
+      : 'Looping ' + activeLoop.name + ': ' + fmt(loopA) + ' → ' + fmt(loopB) +
+        (activeLoop.note ? ' (' + activeLoop.note + ')' : '');
   }
 
-  function setA() {
-    loopA = audio.currentTime;
-    if (loopB != null && loopB <= loopA) {
-      loopB = null;
-      log('B cleared (was at or before new A)');
+  function renderLoops() {
+    var box = $('loops');
+    var list = trackLoops();
+    box.textContent = '';
+    if (!list.length) {
+      var msg = document.createElement('span');
+      msg.textContent = 'No loops for this song.';
+      box.appendChild(msg);
     }
-    log('A = ' + fmt(loopA));
-    loopReadout();
+    list.forEach(function (lp) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = lp.name + ' · ' + fmt(lp.from) + '–' + fmt(lp.to);
+      b.setAttribute('aria-pressed', lp === activeLoop ? 'true' : 'false');
+      b.addEventListener('click', function () { startLoop(lp); });
+      box.appendChild(b);
+    });
+    $('stopLoop').disabled = !activeLoop;
   }
 
-  function setB() {
-    var t = audio.currentTime;
-    if (loopA == null) { log('B refused: set A first', 'err'); return; }
-    if (t <= loopA) { log('B refused: ' + fmt(t) + ' is not after A ' + fmt(loopA), 'err'); return; }
-    loopB = t;
-    log('B = ' + fmt(loopB) + ', loop on (' + (loopB - loopA).toFixed(2) + ' s); jumping to A');
+  function startLoop(lp) {
+    if (!(isFinite(lp.from) && isFinite(lp.to) && lp.to > lp.from)) {
+      log('loop "' + lp.name + '" refused: needs numeric from < to', 'err');
+      return;
+    }
+    activeLoop = lp;
+    loopA = lp.from;
+    loopB = lp.to;
+    log('loop "' + lp.name + '" on: ' + fmt(loopA) + ' → ' + fmt(loopB) +
+      ' (' + (loopB - loopA).toFixed(2) + ' s); jumping to start');
     loopReadout();
+    renderLoops();
     loopSeek();
+    doPlay();
   }
 
   function loopSeek() {
@@ -286,10 +321,12 @@
   }
 
   function clearLoop(silent) {
-    var had = loopA != null || loopB != null;
+    var had = activeLoop != null;
+    activeLoop = null;
     loopA = loopB = null;
     loopReadout();
-    if (had && !silent) log('loop cleared');
+    renderLoops();
+    if (had && !silent) log('loop stopped');
   }
 
   // ---- Follow-along (panel shown only with ?follow=1) ----
@@ -424,6 +461,10 @@
       doPlay();
       return;
     }
+    if (!continueToNext) {
+      log('ended: continue to next song is off, stopping');
+      return;
+    }
     if (idx < tracks.length - 1) {
       log('ended → next track');
       next();
@@ -471,8 +512,8 @@
   action('pause', function () { audio.pause(); });
   action('previoustrack', function () { prev(); });
   action('nexttrack', function () { next(); });
-  action('seekbackward', function (d) { seekTo(audio.currentTime - (d.seekOffset || 5)); });
-  action('seekforward', function (d) { seekTo(audio.currentTime + (d.seekOffset || 5)); });
+  action('seekbackward', function (d) { seekTo(audio.currentTime - (d.seekOffset || 10)); });
+  action('seekforward', function (d) { seekTo(audio.currentTime + (d.seekOffset || 10)); });
   action('seekto', function (d) {
     if (d.seekTime == null) return;
     if (d.fastSeek && 'fastSeek' in audio) audio.fastSeek(d.seekTime);
@@ -490,15 +531,18 @@
 
   $('prev').addEventListener('click', prev);
   $('next').addEventListener('click', next);
-  $('back5').addEventListener('click', function () { seekTo(audio.currentTime - 5); });
-  $('fwd5').addEventListener('click', function () { seekTo(audio.currentTime + 5); });
+  $('back10').addEventListener('click', function () { seekTo(audio.currentTime - 10); });
+  $('fwd10').addEventListener('click', function () { seekTo(audio.currentTime + 10); });
   $('speed').addEventListener('change', function () {
     rate = parseFloat(this.value);
     applyRate();
   });
-  $('setA').addEventListener('click', setA);
-  $('setB').addEventListener('click', setB);
-  $('clearLoop').addEventListener('click', function () { clearLoop(false); });
+  $('continueNext').checked = continueToNext;
+  $('continueNext').addEventListener('change', function () {
+    continueToNext = this.checked;
+    log('continue to next song: ' + (continueToNext ? 'on' : 'off'));
+  });
+  $('stopLoop').addEventListener('click', function () { clearLoop(false); });
   $('mark').addEventListener('click', function () {
     log('{t: ' + audio.currentTime.toFixed(2) + '},', 'mark');
   });
@@ -527,7 +571,7 @@
     });
   }
 
-  log('page loaded; ' + tracks.length + ' tracks; ' + (window.isSecureContext ? 'secure context' : 'NOT a secure context'));
+  log('page loaded; ' + tracks.length + ' tracks; continue to next song ' + (continueToNext ? 'on' : 'off') + '; ' + (window.isSecureContext ? 'secure context' : 'NOT a secure context'));
   loadTrack(0, false);
 })();
 </script>
