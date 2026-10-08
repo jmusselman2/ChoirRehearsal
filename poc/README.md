@@ -163,8 +163,7 @@ Fix that first.
   and stops after track 4. With it off, playback stops at the end of the track.
   On Android, Chrome removes the media notification once playback stops at the end.
 - Lock-screen metadata (title, artist, album, artwork) is set once per track and doesn't change during it.
-- **Row 8 (seek accuracy)** is a seek-consistency check on test1 only.
-  Seek to the same lyric three times and compare the displayed time.
+- **Seek accuracy:** on test1, seek to the same lyric three times and compare the displayed time.
   The files are already CBR, so there's no separate CBR copy.
 - Offline:
   - On load the page saves all four MP3s for offline use without asking, then shows

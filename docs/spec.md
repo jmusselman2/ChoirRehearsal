@@ -8,7 +8,7 @@ This is the single spec for the real app. It merges two earlier documents and re
 - **Data, timing engine, offline, playback rules and testing** come from the longer project spec.
 - Where the two disagreed, the Oct 8 decision is what's written here. §20 lists what's still open.
 
-The repo is public, so this spec uses placeholder song titles and lyrics. Real song data lives in the gitignored `content/` folder (§15).
+The repo is public, so this spec uses placeholder song titles and lyrics. Real song data lives in the gitignored `app/content/` folder (§15).
 
 ---
 
@@ -170,7 +170,7 @@ The ribbon is the main screen once MusicXML exists, so it has to be large.
 - **Size.** A paper card about 300 dp tall (roughly a third of the screen):
   - The **current line**, about 190 dp, shows **4–5 measures** of the tenor staff with lyrics under the notes.
   - The **next line**, about 90 dp, below at `ink-faded`.
-- **Staff.** One tenor staff, treble clef with an 8 below. (The first MusicXML source is in bass clef; see §20.)
+- **Staff.** One tenor staff, in the clef the printed score uses for the tenor line (§13).
 - **Position.** The current measure gets an `accent-tint` fill. A 2 dp `accent` playhead marks the exact position. Measure numbers sit above the staff.
 - **Motion: build both, decide on the phone.**
   - **Line paging:** the playhead moves across the line; when the last measure ends, the next line slides up and becomes current, like reading sheet music.
@@ -392,7 +392,12 @@ Notated beats is available for MusicXML songs (it handles time-signature changes
 
 ### MusicXML
 
-- Render only the tenor part. Keep printed measure numbers (including m. 0), clef, key and time signatures, lyrics and multi-measure rests.
+- Render only the tenor part. Keep printed measure numbers (including m. 0), key and time signatures, lyrics and multi-measure rests.
+- **Clef:** the clef the printed score uses for the tenor line, taken from the MusicXML. The renderer never overrides it.
+  - In the first song's printed score the tenors share a bass-clef staff with the basses, so its tenor line shows in bass clef, with ledger lines for the high notes.
+  - A score that prints the tenor part on its own staff in treble clef with an 8 below shows that instead.
+  - If the printed tenor line changes clef partway, the MusicXML carries the change.
+- **Divided tenors:** show the line the recording features. For one song the recording is Tenor 2 predominant, so its score shows the Tenor 2 line. The song file names the line (`score.line`, §15).
 - Measure view lays out its own ribbon, independent of page rendering.
 - If a future song has repeats, flatten them to playback order when preparing the content.
 
@@ -423,11 +428,12 @@ The setup page can propose rest ranges from MusicXML (measures with no pitched n
 
 The arrangements and recordings are copyrighted and the repo is public:
 
-- **`content/`** (gitignored) holds the real catalog, song files, audio, score images and MusicXML. It's uploaded to the server by hand.
-- **`content.example/`** (in git) holds the placeholder Song One–Four from §10, so the app runs without real content.
+- **`app/content/`** (gitignored) holds the real catalog, song files, audio, score images and MusicXML. It's uploaded with the rest of `app/` (§17).
+- **`app/content.example/`** (in git) holds the placeholder Song One–Four from §10, so the app runs without real content.
+- The player loads `content/catalog.json`. If that's missing (a 404), it loads `content.example/catalog.json` instead and shows "Sample songs" in the Settings footer. The setup page does the same with `../content/`.
 
 ```text
-content/
+app/content/
 ├── catalog.json
 ├── songs/song-1.json …
 ├── audio/song-1.mp3 …
@@ -502,6 +508,7 @@ The array order is the song order.
 ```
 
 - `source` is `"section"`, `"measure"`, `"nudge"` or `"terminal"`. The setup page draws explicit and inferred boundaries differently.
+- `score.line` (optional) names the tenor line shown when the tenors divide, for example `"Tenor 2"`. Without it, the single tenor line is shown.
 - A page-image song replaces `score` with `{ "format": "page-images", "pages": [{ "id", "src" }], "regions": [{ "id", "page", "section", "rect": { "x", "y", "width", "height" } }] }`.
 - A song with no timing yet has an empty `anchors` array; the app shows it unsynced (§7 frame 12).
 - IDs are lowercase kebab-case and don't change when labels change.
@@ -517,7 +524,7 @@ Timing is created here. It's at `/rehearsal/setup/`, desktop-only and not linked
 
 The full tool waits until the player works. Version 1 is a single page, based on the PoC's **Mark** button:
 
-- Pick a song; its audio, sections and MusicXML or page images load from `content/`.
+- Pick a song; its audio, sections and MusicXML or page images load from `../content/`.
 - Play at any speed, with a large **Mark** button (and the spacebar). A mode switch chooses what a tap marks:
   - **Sections:** the start of the next section.
   - **Measures:** pick a range ("m. 81 to m. 88"); each tap marks the next measure. Long rests can be skipped; the re-entry measure is the one to mark.
@@ -550,32 +557,57 @@ Plain HTML, CSS and JavaScript, with no build step and no framework. Code is spl
 
 ### Layout
 
+Everything the site serves lives under `app/`, the same way everything the PoC serves lives under `poc/`. The folder uploads as-is.
+
 ```text
-app/                    the player, uploaded to /rehearsal/
+app/                    → /rehearsal/
 ├── index.html
 ├── styles.css
 ├── manifest.webmanifest
 ├── sw.js               service worker (§19)
+├── .htaccess           caching and MIME types
 ├── icons/
-└── js/
-    ├── main.js         wiring and UI state
-    ├── playback.js     the audio element, commands, Media Session
-    ├── timing.js       anchors → measure boundaries, lookups
-    ├── loops.js        loop boundaries and wrapping
-    ├── content.js      loading and validating catalog and songs
-    ├── settings.js     persisted preferences
-    ├── views/          score, lyrics, score-lyrics, measure, whole-score
-    └── score/          page-images.js, musicxml.js
-setup/                  the setup page, uploaded to /rehearsal/setup/
-vendor/                 the MusicXML renderer
-content/                real content (gitignored)
-content.example/        placeholder content
-tests/                  node:test unit tests
-poc/                    the proof of concept (uploaded to /rehearsal/poc/)
-docs/
+├── js/
+│   ├── main.js         wiring and UI state
+│   ├── playback.js     the audio element, commands, Media Session
+│   ├── timing.js       anchors → measure boundaries, lookups
+│   ├── loops.js        loop boundaries and wrapping
+│   ├── content.js      loading and validating catalog and songs
+│   ├── settings.js     persisted preferences
+│   ├── views/          score, lyrics, score-lyrics, measure, whole-score
+│   └── score/          page-images.js, musicxml.js
+├── vendor/             the MusicXML renderer
+├── setup/              the setup page → /rehearsal/setup/
+├── content/            real content (gitignored) → /rehearsal/content/
+└── content.example/    placeholder content (in git)
+poc/                    the proof of concept → /rehearsal/poc/
+tests/                  node:test unit tests (not uploaded)
+docs/                   (not uploaded)
 ```
 
-`timing.js` and `loops.js` have no DOM code, so the same files run in the browser, in the setup page, and under `node --test`.
+- Every URL inside `app/` is relative (no leading `/`), so the same files work at `http://localhost:8080/` and at `/rehearsal/`.
+- `timing.js` and `loops.js` have no DOM code, so the same files run in the player, in the setup page, and under `node --test` (the tests import them from `app/js/`).
+
+### Local development
+
+From the repo root:
+
+```powershell
+npx http-server app -p 8080 -c-1
+```
+
+- `http://localhost:8080/` is the player and `http://localhost:8080/setup/` the setup page: the same layout as the live site.
+- Use `http-server`, not Python's server, which has no Range support.
+- On the phone, forward port 8080 from `chrome://inspect`. `localhost` counts as a secure context, so the service worker and Media Session work.
+- Without `app/content/`, the player runs on the placeholder songs.
+
+### Deploying
+
+- With cPanel File Manager, upload the contents of `app/` into `public_html/rehearsal/`, keeping the folders. That includes `content/` and the `.htaccess` dotfile (turn on *Show Hidden Files* to check it's there). `content.example/` can be skipped.
+- Bump `APP_VERSION` in `sw.js` whenever code changes, and `catalogRevision` in `content/catalog.json` whenever content changes, so phones pick up the update (§19).
+- The PoC goes only into `public_html/rehearsal/poc/`. Never put the PoC's `sw.js` in `/rehearsal/` itself: it would take over the app's scope.
+- `.htaccess`: `no-cache` for `.html`, `.js`, `.json` and `.webmanifest`; MIME types for `.mp3` (`audio/mpeg`), `.webmanifest` (`application/manifest+json`), `.musicxml` (`application/vnd.recordare.musicxml+xml`) and `.webp`.
+- After uploading, check Range support on an MP3: `curl.exe -sI -H "Range: bytes=0-1" https://jordanmusselman.com/rehearsal/content/audio/song-1.mp3` must return `206 Partial Content`.
 
 ### State
 
@@ -587,7 +619,7 @@ docs/
 
 ### MusicXML renderer
 
-Test OpenSheetMusicDisplay (OSMD) and Verovio on the Pixel with the real tenor MusicXML before choosing. Check tenor-only rendering, access to measure positions for the ribbon, multi-measure rests, readability, and load time.
+Test OpenSheetMusicDisplay (OSMD) and Verovio on the Pixel with the real tenor MusicXML before choosing. Check tenor-only rendering, the source clef shown unchanged (bass clef, with notes above the staff), access to measure positions for the ribbon, multi-measure rests, readability, and load time.
 
 ### Security and privacy
 
@@ -620,9 +652,12 @@ Verified on a Pixel 7 (Android 16, Chrome 153) with the PoC.
 
 ### Service worker
 
-- Hand-written, versioned by the catalog revision.
-- App files: served from the cache, refreshed in the background.
-- Audio: saved whole (a `200`, never a `206`). The audio element's Range requests are answered by slicing the cached file into a `206` response with `Content-Range`. The PoC proved this keeps seeking working with the server gone (desktop Chrome; the Pixel test is pending).
+- Hand-written. App files are versioned by `APP_VERSION` in `sw.js`; content by the catalog's `catalogRevision`.
+- **Scope.** The player registers `sw.js` with scope `./`, which on the live site is `/rehearsal/`. That scope also covers `/rehearsal/setup/` and `/rehearsal/poc/`, so the worker ignores (never answers) any request under `setup/` or `poc/`:
+  - the setup page always loads fresh from the server, and registers no service worker of its own;
+  - the PoC keeps its own worker (scope `/rehearsal/poc/`, which wins for PoC pages) and is never served the app's files.
+- App files: on the live site, served from the cache and refreshed in the background. On `localhost`, fetched network-first so edits show up without bumping the version.
+- Audio: saved whole (a `200`, never a `206`). The audio element's Range requests are answered by slicing the cached file into a `206` response with `Content-Range`. The PoC proved this on the Pixel 7 with the server unreachable: reload, cold open, play, seek, ±5 s, loop wraps with the screen off, track changes from the app and the lock screen, and auto-advance while hidden.
 - A new catalog revision downloads in the background and is used on the next launch, never mid-playback. The previous revision stays until the new one is complete.
 - Request persistent storage (`navigator.storage.persist()`) but don't depend on it.
 
@@ -641,20 +676,17 @@ Launching offline without a song's audio saved shows "This song isn't available 
 
 ## 20. Open questions
 
-1. **Clef.** The first MusicXML source writes the tenor line in bass clef. Show it as written, or convert to treble clef with an 8 below (the spec's default)?
-2. **Song Four's part.** Its recording features Tenor 2. Should the score show the Tenor 2 line?
-3. **Ribbon motion** (§6): line paging or continuous? Decide on the phone.
-4. **Colors** (§3): decide on the phone.
-5. **MusicXML renderer** (§17): OSMD or Verovio, after the phone test.
-6. **Offline on the phone.** The PoC's offline checkpoint passed on desktop; it still needs the Pixel test, including a cold launch with no network.
-7. **Installed PWA.** Background playback and media controls when launched from the home screen, not a Chrome tab.
-8. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
+1. **Ribbon motion** (§6): line paging or continuous? Decide on the phone.
+2. **Colors** (§3): decide on the phone.
+3. **MusicXML renderer** (§17): OSMD or Verovio, after the phone test.
+4. **Installed PWA.** Background playback and media controls when launched from the home screen, not a Chrome tab.
+5. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
 
 ---
 
 ## 21. Implementation phases
 
-1. **Device proof (nearly done).** The PoC covers background playback, media controls, metadata, artwork and loop wrapping on the Pixel. Remaining: the offline test on the phone, installed-PWA mode, and the renderer comparison.
+1. **Device proof (nearly done).** The PoC covers background playback, media controls, metadata, artwork, loop wrapping and offline playback with seeking on the Pixel. Remaining: installed-PWA mode and the renderer comparison.
 2. **Clickable prototype.** A single HTML file on a simulated clock with the placeholder data: all views, sheets, both ribbon motions, the rest countdown, loops, and the 360 dp chip row. Use it to choose colors and ribbon motion.
 3. **Playback and timing core.** Real audio, the playback module, `timing.js` and `loops.js` with unit tests, settings persistence, song switching and Repeat. One song works end to end online.
 4. **Page-image content.** Section crops, Whole Score, validation, Settings, lyrics size and error states. All four songs usable.

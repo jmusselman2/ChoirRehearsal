@@ -45,11 +45,12 @@ It's hosted at `jordanmusselman.com/rehearsal/`.
 | ---------------------------- | ------------------------------------------------------------------------------ |
 | [docs/spec.md](docs/spec.md) | The spec: screens, behavior, timing model, data, offline, phases, tests        |
 | [poc/](poc/README.md)        | Throwaway proof of concept: background playback, lock screen, loops, offline  |
-| `content/`                   | Real songs, scores and lyrics. Gitignored, because they're copyrighted        |
+| `app/` (planned)             | The real app. Everything under it uploads as-is to `/rehearsal/`              |
+| `app/content/`               | Real songs, scores and lyrics. Gitignored, because they're copyrighted        |
 
 ## Status
 
-1. **Proof of concept:** background playback, lock-screen controls, metadata, artwork and loop wrapping
-   verified on a Pixel 7. Offline playback with seeking verified on desktop; the phone test is next.
+1. **Proof of concept:** background playback, lock-screen controls, metadata, artwork, loop wrapping
+   and offline playback with seeking, all verified on a Pixel 7.
 2. **Clickable prototype:** next. See spec §21.
 3. **Real app:** after that.
