@@ -640,6 +640,7 @@ Verified on a Pixel 7 (Android 16, Chrome 153) with the PoC.
   - Seek backward/forward skip 5 s. Android sends no `seekOffset`, so the app's value is what applies.
 - Playback continues with the screen off; loops keep wrapping while hidden.
 - When playback stops at the end, Chrome removes the media notification. With Repeat Off this happens only after the last song.
+- All of the above also holds for the installed app: Chrome built a real WebAPK, and in standalone mode background playback, loop wrapping, the media controls (pause, play, previous, next, seek) and an offline launch all worked.
 
 ---
 
@@ -659,7 +660,7 @@ Verified on a Pixel 7 (Android 16, Chrome 153) with the PoC.
 - App files: on the live site, served from the cache and refreshed in the background. On `localhost`, fetched network-first so edits show up without bumping the version.
 - Audio: saved whole (a `200`, never a `206`). The audio element's Range requests are answered by slicing the cached file into a `206` response with `Content-Range`. The PoC proved this on the Pixel 7 with the server unreachable: reload, cold open, play, seek, ±5 s, loop wraps with the screen off, track changes from the app and the lock screen, and auto-advance while hidden.
 - A new catalog revision downloads in the background and is used on the next launch, never mid-playback. The previous revision stays until the new one is complete.
-- Request persistent storage (`navigator.storage.persist()`) but don't depend on it.
+- Request persistent storage (`navigator.storage.persist()`) but don't depend on it. On the Pixel, Chrome granted it to the installed app but not to a browser tab.
 
 ### Status line (Settings footer)
 
@@ -679,14 +680,13 @@ Launching offline without a song's audio saved shows "This song isn't available 
 1. **Ribbon motion** (§6): line paging or continuous? Decide on the phone.
 2. **Colors** (§3): decide on the phone.
 3. **MusicXML renderer** (§17): OSMD or Verovio, after the phone test.
-4. **Installed PWA.** Background playback and media controls when launched from the home screen, not a Chrome tab.
-5. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
+4. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
 
 ---
 
 ## 21. Implementation phases
 
-1. **Device proof (nearly done).** The PoC covers background playback, media controls, metadata, artwork, loop wrapping and offline playback with seeking on the Pixel. Remaining: installed-PWA mode and the renderer comparison.
+1. **Device proof (nearly done).** The PoC covers background playback, media controls, metadata, artwork, loop wrapping, offline playback with seeking, and all of it as an installed app on the Pixel. Remaining: the renderer comparison.
 2. **Clickable prototype.** A single HTML file on a simulated clock with the placeholder data: all views, sheets, both ribbon motions, the rest countdown, loops, and the 360 dp chip row. Use it to choose colors and ribbon motion.
 3. **Playback and timing core.** Real audio, the playback module, `timing.js` and `loops.js` with unit tests, settings persistence, song switching and Repeat. One song works end to end online.
 4. **Page-image content.** Section crops, Whole Score, validation, Settings, lyrics size and error states. All four songs usable.

@@ -6,6 +6,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rehearsal PoC</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#121417">
 <style>
   :root { color-scheme: light dark; --accent: #2a6ad1; --err: #d22; --warn: #c80; }
   * { box-sizing: border-box; }
@@ -671,7 +673,8 @@
   }
 
   log('page loaded; ' + tracks.length + ' tracks; continue to next song ' + (continueToNext ? 'on' : 'off') + '; ' +
-    (window.isSecureContext ? 'secure context' : 'NOT a secure context') + '; ' + (navigator.onLine ? 'online' : 'offline'));
+    (window.isSecureContext ? 'secure context' : 'NOT a secure context') + '; ' + (navigator.onLine ? 'online' : 'offline') + '; ' +
+    (matchMedia('(display-mode: standalone)').matches ? 'installed app (standalone)' : 'browser tab'));
   loadTrack(0, false);
   startOffline();
 })();

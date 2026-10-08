@@ -1,8 +1,8 @@
 # Rehearsal player: proof of concept
 
 Throwaway single page that tests whether a plain web page can give reliable
-Android background playback, lock-screen controls, loop wrap accuracy, offline playback
-and follow-along.
+Android background playback, lock-screen controls, loop wrap accuracy, offline playback,
+installed-app (PWA) behavior and follow-along.
 The findings carry forward; this code doesn't.
 
 Tap-to-set A–B looping is dropped from the product (see [docs/spec.md](../docs/spec.md)).
@@ -15,14 +15,16 @@ Everything the page needs at runtime is inside `poc/`, so its contents upload as
 | `index.html`                    | The PoC page (CSS and JS inline)                           | yes                 |
 | `smoke.html`                    | Checkpoint 1: just `<audio controls>` on test1             | yes                 |
 | `sw.js`                         | Service worker: offline page and MP3s, with seeking        | yes                 |
+| `manifest.webmanifest`          | Makes the page installable as an app                       | yes                 |
 | `config.example.js`             | Mock `CONFIG` (titles, loops, lyrics, score sections)      | yes                 |
 | `config.js`                     | Your live `CONFIG`, copied from the example                | **no** (gitignored) |
 | `mock/score-placeholder.svg`    | Fake score page with 5 empty systems                       | yes                 |
-| `mock/artwork.png`              | 512×512 lock-screen artwork (dark tile, steel-blue note)   | yes                 |
+| `mock/artwork.png`              | 512×512 lock-screen artwork and app icon                   | yes                 |
+| `mock/icon-192.png`             | 192×192 app icon                                           | yes                 |
 | `score/`                        | Real score images                                          | **no** (gitignored) |
 | `audio/test1.mp3` … `test4.mp3` | Copies of the repo-root `audio/` files                     | **no** (gitignored) |
 | `sync-media.ps1`                | Copies the MP3s into `poc/audio/`                          | yes                 |
-| `.htaccess`                     | `no-cache` for `.html`/`.js`, MIME types for `.mp3`/`.svg` | yes                 |
+| `.htaccess`                     | `no-cache` and MIME types (`.mp3`, `.svg`, `.webmanifest`) | yes                 |
 
 ## Run locally
 
@@ -114,10 +116,12 @@ keeping the folder structure.
 index.html
 smoke.html
 sw.js
+manifest.webmanifest
 config.js
 .htaccess
 mock/score-placeholder.svg
 mock/artwork.png
+mock/icon-192.png
 audio/test1.mp3
 audio/test2.mp3
 audio/test3.mp3
@@ -174,3 +178,11 @@ Fix that first.
   - To test offline, stop the server (or remove the USB port forward), then reload.
     The page should load, play, seek, loop and switch tracks with every audio line
     reading `from cache`.
+- Installed app:
+  - In Chrome on the phone, open the ⋮ menu → **Install and create shortcut** → **Install**.
+    Android builds a real app (a WebAPK), even for `localhost`, and it appears in the app drawer.
+  - The first log line ends in `installed app (standalone)` when it runs as the app
+    and `browser tab` when it doesn't.
+  - Chrome granted persistent storage to the installed app but not to the browser tab,
+    so the saved songs are safer from eviction there.
+  - Uninstall it like any other app when you're done.

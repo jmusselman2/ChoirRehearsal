@@ -3,9 +3,10 @@
 // element's Range requests from cached MP3s so seeking works offline.
 // The page itself saves the MP3s into AUDIO_CACHE (see index.html).
 
-var SHELL_CACHE = 'poc-shell-v1';
+var SHELL_CACHE = 'poc-shell-v2';
 var AUDIO_CACHE = 'poc-audio-v1';
-var SHELL = ['./', 'index.html', 'config.js', 'mock/artwork.png', 'mock/score-placeholder.svg'];
+var SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'mock/artwork.png', 'mock/icon-192.png',
+  'mock/score-placeholder.svg'];
 
 // Send a line to every open page's event log.
 function notify(msg, cls) {

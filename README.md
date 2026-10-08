@@ -51,6 +51,6 @@ It's hosted at `jordanmusselman.com/rehearsal/`.
 ## Status
 
 1. **Proof of concept:** background playback, lock-screen controls, metadata, artwork, loop wrapping
-   and offline playback with seeking, all verified on a Pixel 7.
+   and offline playback with seeking, all verified on a Pixel 7, in a Chrome tab and as an installed app.
 2. **Clickable prototype:** next. See spec §21.
 3. **Real app:** after that.

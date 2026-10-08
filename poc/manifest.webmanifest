@@ -1,0 +1,17 @@
+{
+  "name": "Rehearsal PoC",
+  "short_name": "Rehearsal PoC",
+  "description": "Throwaway proof of concept for the tenor rehearsal player.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121417",
+  "theme_color": "#121417",
+  "icons": [
+    { "src": "mock/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "mock/artwork.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "mock/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "mock/artwork.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
