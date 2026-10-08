@@ -12,7 +12,7 @@ It's hosted at `jordanmusselman.com/rehearsal/`.
 
 - **Users.** Jordan, plus one tenor friend practicing the same parts. There are no accounts and no login.
 - **Content.** 4 songs (Tenor Choir, Fall 2026), each with one MP3, a tenor-only score, and lyrics.
-- **Platforms.** Android first, then desktop web (which also runs the Setup screen), then iOS.
+- **Platforms.** Android first, then desktop web (which also runs the setup page), then iOS.
   iOS doesn't need every feature.
 
 ### Must be true
@@ -26,27 +26,30 @@ It's hosted at `jordanmusselman.com/rehearsal/`.
 - **Tenor-only score.** Every notation view shows only the tenor line with lyrics. There's no SATB or full-score view.
 - **Tenor rests and the entrance countdown.** During a tenor rest, the measure view holds on the rest and counts down
   the measures until the tenor enters ("Tenor enters in 4").
-- **Playback-ordered time map.** Timing is a list of `{ measure, pass }` entries in playback order,
-  so a repeated measure appears once per pass. Sections, lyrics and loops all point at `{ measure, pass }`.
-- **Per-measure pass and tap offset.** Sections are marked first. A per-measure tapping pass fixes drift where it shows,
-  usually at endings and held notes. Each song stores a tap offset that's applied to every tapped mark.
-- **Loops are named measure ranges.** The teacher assigns them, and their boundaries are marked in Setup.
-  Loops are off by default. There's no tap-to-set A–B looping.
-- **Static lock-screen metadata.** Title, artist ("Tenor rehearsal"), album and artwork are set once per track
-  and never change during it.
-- **No Car Mode.** Lock-screen controls cover eyes-free listening, and Lyrics Only covers a quick glance.
-- **⏮/⏭ step between songs**, in the player and on the lock screen. "Continue to next song" only controls
-  what happens when a song ends.
+- **Everything is keyed by printed measure number.** Sections, lyric phrases, rests and loops all point at measures
+  (a pickup is m. 0). Timing is a set of measure anchors with even spacing in between.
+  None of the songs has a written repeat, so a measure number alone identifies a point in time.
+- **Section marks first, per-measure marks only where needed.** A per-measure pass fixes drift at endings,
+  held notes and re-entries after rests.
+- **Loops are named measure ranges** the teacher assigns. Off by default; no tap-to-set A–B looping.
+- **⏮/⏭ step between songs** and wrap. A **Repeat** setting (Off / This song / All songs) decides what happens
+  when a song ends; Off plays through to the end of the last song.
+- **Static lock-screen metadata.** Title, artist ("Tenor rehearsal"), album and artwork are set once per track.
+- **Offline is automatic.** All four songs are saved after the first load; there's no download button.
+- **No Car Mode.** Lock-screen controls cover eyes-free listening, and the Lyrics view covers a quick glance.
+- **Plain HTML and JavaScript.** No build step and no framework.
 
 ## Repo layout
 
-| Path                         | What it is                                                                 |
-| ---------------------------- | -------------------------------------------------------------------------- |
-| [docs/spec.md](docs/spec.md) | Mockup spec: screens, visual system, sample data, Setup, time map          |
-| [poc/](poc/README.md)        | Throwaway proof of concept for background playback, lock screen and loops |
+| Path                         | What it is                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------------ |
+| [docs/spec.md](docs/spec.md) | The spec: screens, behavior, timing model, data, offline, phases, tests        |
+| [poc/](poc/README.md)        | Throwaway proof of concept: background playback, lock screen, loops, offline  |
+| `content/`                   | Real songs, scores and lyrics. Gitignored, because they're copyrighted        |
 
 ## Status
 
-1. **Proof of concept:** done ([poc/](poc/README.md)). Its findings carry forward; its code doesn't.
-2. **Mockup / prototype:** next. See spec §7 for the screens and §14 for the prototype notes.
+1. **Proof of concept:** background playback, lock-screen controls, metadata, artwork and loop wrapping
+   verified on a Pixel 7. Offline playback with seeking verified on desktop; the phone test is next.
+2. **Clickable prototype:** next. See spec §21.
 3. **Real app:** after that.

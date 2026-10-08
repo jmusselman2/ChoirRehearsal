@@ -1,41 +1,53 @@
-# Choir Rehearsal Player: Mockup Spec
+# Choir Rehearsal Player: Spec
 
-Oct 3, 2026 · Jordan
+Oct 8, 2026 · Jordan
 
-This spec has everything needed to build the mockup from scratch, without the earlier mockups or the review. It includes the decisions from the Oct 3 mockup review and the follow-up review of that document (time map, loops, the interim Measure view, back gesture, and a few small fixes).
+This is the single spec for the real app. It merges two earlier documents and records the decisions made on Oct 8:
+
+- **Screens and UI** come from the Oct 3 mockup spec (and its review).
+- **Data, timing engine, offline, playback rules and testing** come from the longer project spec.
+- Where the two disagreed, the Oct 8 decision is what's written here. §20 lists what's still open.
+
+The repo is public, so this spec uses placeholder song titles and lyrics. Real song data lives in the gitignored `content/` folder (§15).
 
 ---
 
 ## 1. What this is
 
-This is a phone-first web app (PWA) for practicing choir parts against rehearsal recordings. It plays an MP3 and shows the tenor line, the lyrics, or both, synced to the audio. It's hosted at `jordanmusselman.com/rehearsal/`.
+A phone-first web app (PWA) for practicing choir parts against rehearsal recordings. It plays an MP3 and shows the tenor line, the lyrics, or both, synced to the audio.
 
-- **Users.** Jordan first, plus one tenor friend practicing the same parts. It has no accounts and no login.
-- **Content.** There are 4 songs (Tenor Choir, Fall 2026). Each song has one MP3, a tenor-only score, and lyrics.
-- **Platforms.** Android is the priority, then desktop web (which also runs the setup screen), then iOS. iOS doesn't need every feature.
+- **Users.** Jordan first, plus one tenor friend practicing the same parts. No accounts and no login.
+- **Content.** 4 songs (Tenor Choir, Fall 2026). Each song has one MP3, a tenor-only score, and lyrics.
+- **Platforms.** Android is the priority, then desktop web (which also runs the setup page), then iOS. iOS doesn't need every feature.
+- **Hosting.** `jordanmusselman.com/rehearsal/`, open to anyone with the URL. The proof of concept moves to `/rehearsal/poc/`.
 - **Must be true.** Background playback is reliable, the app works offline, and there's one tap from opening the page to playing.
 
 ## 2. Settled decisions
 
 These are fixed. Don't redesign around them.
 
-| Decision | Consequence for the mockup |
+| Decision | Consequence |
 |---|---|
-| **Straight into the action** | The app opens on the player, on the last song used, ready to play. There's no library, menu, or download step. |
-| **Score is tenor-only** | Every notation view shows only the tenor line with lyrics. There's no SATB or full-system view anywhere. |
-| **Audio is tenor-prominent** | The audio is a full-choir recording with the tenor brought forward. Tempo varies, with ritardandos, fermatas, and held notes. |
-| **Score format** | Songs start as page images with section boxes drawn on them, then move to MusicXML song by song. Everything is keyed by measure, so data carries over between formats. |
-| **Loops are secondary** | Loops are off by default. A loop is a named measure range assigned by Jordan's teacher. There's no tap-to-set A–B. |
-| **Accent is a muted steel blue** | The accent is used only for the current position, the progress bar, the play button ring, and active toggles. |
-| **No Car Mode** | Lock-screen controls cover eyes-free listening, and Lyrics Only covers a quick glance. |
-| **Static lock screen** | The lock screen shows the song title, with "Tenor rehearsal" as the artist. Metadata is set once per track and doesn't update live. |
-| **No left-side header chevron** | There's nothing to go back to. The control read as "close player." |
-| **Measure view needs MusicXML** | Songs that only have page images don't offer Measure mode. The option is shown disabled with a reason. |
-| **Whole Score opens from the view-mode menu** | It's a separate browse screen, not one of the synced view modes. |
+| **Straight into the action** | The app opens on the player, on the last song used, at 0:00, paused and ready to play. No library, menu, or download step. |
+| **Score is tenor-only** | Every notation view shows only the tenor line with lyrics. No SATB or full-system view anywhere. |
+| **Audio is tenor-prominent** | Full-choir recordings with the tenor brought forward. Tempo varies, with ritardandos, fermatas, and held notes. |
+| **Score format** | Songs start as page images with section boxes, then move to MusicXML song by song. Everything is keyed by measure number, so data carries over between formats. |
+| **Measure numbers are printed numbers** | Numbers match the printed score and continue through rests. A pickup measure is m. 0. None of the four songs has a written repeat, so a measure number alone identifies a point in time. |
+| **Loops are secondary** | Off by default. A loop is a named measure range assigned by Jordan's teacher. No tap-to-set A–B. Songs ship with no loops; they're added later. |
+| **Accent is a muted steel blue** | Used only for the current position, the progress bar, the play button ring, and active toggles. Loop shading is neutral grey. |
+| **⏮/⏭ step between songs** | Not sections. ⏭ on the last song wraps to the first. |
+| **Repeat setting** | Off (plays through to the end of the last song, then stops), This song, or All songs. Default Off. |
+| **Song changes start playing** | Picking a song, or ⏮/⏭, starts the new song from 0:00. |
+| **No Car Mode** | Lock-screen controls cover eyes-free listening; Lyrics view covers a quick glance. |
+| **Static lock screen** | Title, "Tenor rehearsal", album and artwork, set once per track. Never updated live. |
+| **No left-side header chevron** | There's nothing to go back to. |
+| **Measure view needs MusicXML** | Page-image songs show Measure disabled with a reason. |
+| **Whole Score opens from the view menu** | A separate browse screen, not one of the synced view modes. |
+| **Plain HTML and JavaScript** | No build step, no framework. ES modules served as files (§17). |
 
-### Explicitly out of scope
+### Out of scope
 
-Leave these out of the mockup: a library or home screen, a "download all" button, SATB or full-score views, Car Mode, A–B tap looping, a gold accent, the left header chevron, a live section subtitle on the lock screen, and any login.
+A library or home screen, a download button, SATB or full-score views, Car Mode, A–B tap looping, loop lead-ins or count-ins, a tap-offset calibration, a gold accent, the left header chevron, live section text on the lock screen, login or accounts, automatic score following, and score editing in the setup page.
 
 ---
 
@@ -44,10 +56,12 @@ Leave these out of the mockup: a library or home screen, a "download all" button
 ### Canvas
 
 - **Primary frame:** 412 × 915 dp (a typical Android phone). Check every phone screen at **360 dp wide** too.
-- **Desktop frame** (Setup screen only): 1440 × 900.
-- **Theme:** dark UI. Notation always sits on a light "paper" card, because score images are black on white. *(Assumption: if the earlier mockup used a light theme, swap the neutrals and keep everything else.)*
+- **Desktop frame** (setup page only): 1440 × 900.
+- **Theme:** dark UI. Notation always sits on a light "paper" card, because score images are black on white.
 
 ### Color tokens
+
+These are starting values. The final palette is chosen when the prototype is on the phone (§20). The project spec's alternative was `#111315` background with a `#627d90` accent.
 
 | Token | Value | Use |
 |---|---|---|
@@ -82,13 +96,14 @@ Use the system font (Roboto on Android).
 | Countdown ("Tenor enters in 4") | 15 / 600, `ink` on paper |
 | Measure numbers on ribbon | 11 / 500, `text-2` on paper |
 
-### Shape and spacing
+### Shape, spacing and motion
 
-- Spacing scale: 4 / 8 / 12 / 16 / 24.
-- Side gutter: 16 dp.
+- Spacing scale: 4 / 8 / 12 / 16 / 24. Side gutter: 16 dp.
 - Touch targets: at least 48 dp.
 - Corner radius: 12 dp for cards and paper, 20 dp for the top corners of sheets, full pill for chips.
 - Sheets slide up from the bottom over a 50% black scrim, with a grab handle at the top.
+- Respect Android safe areas. Notation and lyrics never hide under the player bar.
+- Honor `prefers-reduced-motion`: no animated scrolling, simple fades only. Playback never waits for an animation.
 
 ---
 
@@ -98,22 +113,22 @@ From top to bottom:
 
 1. **Status bar**, 24 dp.
 2. **Header**, 56 dp, on `surface`.
-   - Left: an empty spacer the same width as the right icon, so the title stays centered.
-   - Center: the song title plus a small ⌄. Tapping it opens **Switch Song**.
+   - Left: an empty spacer the same width as the right icons, so the title stays centered.
+   - Center: the song title plus a small ⌄. Tapping it opens **Switch Song**. Long titles truncate with an ellipsis.
    - Right: a ⚙ settings icon. Tapping it opens **Settings**.
-3. **Practice loop banner** (only while a loop is active): 44 dp on `surface-2`. It shows "Loop · Bridge entrance · m. 39–44" and an × to stop the loop.
-4. **Content area.** This depends on the view mode (§5).
+3. **Practice loop banner** (only while a loop is active): 44 dp on `surface-2`. "Loop · Bridge entrance · m. 55–60" and an × that stops the loop (the Loops setting stays on).
+4. **Content area.** Depends on the view mode (§5).
 5. **Player bar**, about 196 dp, on `surface`:
    - **Chip row**, 36 dp chips, left-aligned with 8 dp gaps:
-     - Speed chip: `1.0×`.
+     - Speed chip: `1.0×`. Opens a small speed sheet with the same slider as Settings.
      - View-mode chip: `Score + Lyrics ▾`.
-     - Loop chip: `⟲ Loops`, or `⟲ Bridge entrance` while a loop is active. It shows only when the Loops toggle is on in Settings.
-   - **Scrub bar** with elapsed time on the left and total time on the right. The played portion is `accent`. Section starts are small ticks. An active loop's range shows as a `loop-band` block.
-   - **Transport**, centered: ⟲10 · ⏮ · ▶ · ⏭ · ⟳10. Play/pause is a 64 dp circle with a 2 dp `accent` ring. The other buttons are 48 dp.
-     - ⏮ and ⏭ step between songs, not sections. ⏮ restarts the current song if playback is more than 3 s in; otherwise it goes to the previous song. ⏭ goes to the next song, wrapping from the last song to the first.
-     - "Continue to next song" (§8) only controls what happens when a song ends. It doesn't change ⏮ or ⏭.
+     - Loop chip: `⟲ Loops`, or `⟲ Bridge entrance` while a loop is active. Shown only when Loops is on in Settings.
+   - **Scrub bar** with elapsed time on the left and remaining time on the right. The played portion is `accent`. Section starts are small ticks. An active loop's range shows as a `loop-band` block.
+   - **Transport**, centered: −5 · ⏮ · ▶ · ⏭ · +5. Play/pause is a 64 dp circle with a 2 dp `accent` ring. The other buttons are 48 dp.
+     - ⏮ restarts the current song if playback is more than 3 s in; otherwise it goes to the previous song. ⏭ goes to the next song, wrapping from the last to the first.
+     - The new song starts playing from 0:00.
 
-**Check at 360 dp:** all three chips have to fit on one row. If they don't, the view-mode chip drops the ▾ and shortens "Score + Lyrics" to "Score+Lyr". Never wrap to a second row.
+**Check at 360 dp:** all three chips fit on one row. If they don't, the view-mode chip drops the ▾ and shortens "Score + Lyrics" to "Score+Lyr". Never wrap to a second row.
 
 ---
 
@@ -130,16 +145,21 @@ The view-mode chip opens a small menu:
   Whole score →
 ```
 
-- **Score.** A paper card showing the current section of the tenor score. For page-image songs, this is a crop of the section box. When the section changes, the card cross-fades to the next section. A thin `accent` bar on the card's left edge marks it as current.
-- **Lyrics** (Lyrics Only). This is a vertical list of sections:
-  - The current section is centered, bright (22 / 500), and has a 3 dp `accent` left marker.
+The choice persists across launches and song changes. If the saved view is Measure and the new song has no MusicXML, show Score + Lyrics with a one-line note.
+
+- **Score.** A paper card showing the current section of the tenor score. For page-image songs, this is a crop of the section box; for MusicXML songs, the matching tenor system(s). When the section changes, the card cross-fades. A thin `accent` bar on the card's left edge marks it as current.
+- **Lyrics.** A vertical list of sections, each made of lyric phrases (§14):
+  - The current section is centered, with a 3 dp `accent` left marker. Its current phrase is bright (22 / 500); its other phrases are `text-2`.
   - The sections before and after are dimmed (`text-3`).
   - The section name sits above each block in small caps, `text-2`.
-  - A− and A+ buttons sit on the right of the header, just left of ⚙. The left spacer widens to match, so the title stays centered.
+  - A− and A+ sit on the right of the header, just left of ⚙. The left spacer widens to match, so the title stays centered.
   - The list scrolls itself. If the user scrolls manually, auto-follow pauses until they tap "Follow" (a small pill at the bottom of the list).
-- **Score + Lyrics** (the default on launch). The paper card holds the current section and takes about 55% of the content area. Below it, the current section's lyrics appear at 20 / 500, with the next section's first line dimmed.
-- **Measure** (Measure Follow-Along). This shows the measure ribbon (§6). Below the ribbon are the current section name and the lyric line for the current measure. It's only available for MusicXML songs.
-- **Whole score.** This opens a full-screen browse view: the tenor pages, scrolled vertically, with no sync. The header shows "Whole score" and an × that returns to the player. A compact bar at the bottom (play/pause, title, elapsed time) keeps playback controllable.
+  - During a rest with no current phrase, the next phrase shows dimmed with the countdown.
+- **Score + Lyrics** (the default view). The paper card holds the current section and takes about 55% of the content area. Below it, the current phrase at 20 / 500, with the next phrase dimmed.
+  - No lyrics for this section: the score expands and "Lyrics unavailable for this section" shows in `text-3`.
+  - The score can't render: playback continues, the lyrics show, and "Score unavailable" with a Retry button replaces the card.
+- **Measure** (Measure Follow-Along). The measure ribbon (§6), with the current section name and lyric line below it. MusicXML songs only.
+- **Whole score.** A full-screen browse view: the tenor pages scrolled vertically, with no sync and no auto-scroll. The header shows "Whole score" and an × that returns to the player. A compact bar at the bottom (play/pause, title, elapsed time) keeps playback controllable. A small "Jump to current section" button appears after scrolling away from it.
 
 ---
 
@@ -147,17 +167,19 @@ The view-mode chip opens a small menu:
 
 The ribbon is the main screen once MusicXML exists, so it has to be large.
 
-- **Size.** It's a paper card about 300 dp tall (roughly a third of the screen):
+- **Size.** A paper card about 300 dp tall (roughly a third of the screen):
   - The **current line**, about 190 dp, shows **4–5 measures** of the tenor staff with lyrics under the notes.
-  - The **next line**, about 90 dp, is shown below at `ink-faded`.
-- **Position.** The current measure gets an `accent-tint` fill. A 2 dp `accent` playhead moves through it. Measure numbers sit above the staff.
-- **Paging.** When the last measure on the current line ends, the next line slides up and becomes current. Paging is by line, like reading sheet music, rather than continuous scrolling.
-- **Repeats.** On the second time through a repeated passage, the measure label reads `m. 17 · 2nd` and the lyrics show verse 2.
-- **Tenor rests and countdown.** When the current measure falls inside a rest:
+  - The **next line**, about 90 dp, below at `ink-faded`.
+- **Staff.** One tenor staff, treble clef with an 8 below. (The first MusicXML source is in bass clef; see §20.)
+- **Position.** The current measure gets an `accent-tint` fill. A 2 dp `accent` playhead marks the exact position. Measure numbers sit above the staff.
+- **Motion: build both, decide on the phone.**
+  - **Line paging:** the playhead moves across the line; when the last measure ends, the next line slides up and becomes current, like reading sheet music.
+  - **Continuous:** the playhead is fixed at the center and the music scrolls under it.
+- **Tenor rests and countdown.** When the current measure falls inside a rest range (§13):
   - The ribbon holds on the rest. A multi-measure rest shows as one wide bar with its count above it (for example, "8").
-  - A label above the staff reads **"Tenor enters in 4"**. The number is **measures**, and it counts down at each barline.
+  - A label above the staff reads **"Tenor enters in 4"**. The number is **measures** remaining before the entrance, and it counts down at each barline. Scrubbing into a rest computes it immediately; pausing freezes it.
   - The entrance measure shows faded to the right of the rest. On the last measure before the entrance ("enters in 1"), it brightens to full `ink`.
-  - At the entrance, the ribbon goes back to normal paging, with the entrance measure as the current measure.
+  - At the entrance, the ribbon goes back to normal motion, with the entrance measure current.
 - **Loop active.** The loop's measures get a `loop-band` fill behind the staff. Its start and end barlines are drawn 2 dp thicker.
 
 ---
@@ -166,50 +188,60 @@ The ribbon is the main screen once MusicXML exists, so it has to be large.
 
 Phone frames are 412 × 915 and use the sample data in §10.
 
-1. **Player, Score + Lyrics** (launch state): Song 1, Verse 1 playing at 0:41, paused. The loop chip is hidden.
-2. **Switch Song** sheet: a compact list of the 4 songs (title plus duration). The current song is marked with a 3 dp `accent` bar on the left. There are no other buttons.
-3. **Measure Follow-Along**, normal: Song 1, m. 18 (verse 1). Draw the current line and the faded next line.
-4. **Measure Follow-Along, rest countdown**: Song 1, m. 36 during the 8-measure interlude rest. It shows "Tenor enters in 5", with m. 41 faded at the right.
-5. **Lyrics Only**: the Chorus is current, with Verse 2 above it and the Interlude below, both dimmed. A−/A+ are in the header.
-6. **View-mode menu** open, on a page-image song (Song 2), so Measure is disabled with "Needs MusicXML".
+1. **Player, Score + Lyrics:** Song 1, Verse 1, paused at 0:41. The loop chip is hidden.
+2. **Switch Song** sheet: a compact list of the 4 songs (title plus duration). The current song is marked with a 3 dp `accent` bar on the left. No other buttons.
+3. **Measure Follow-Along**, normal: Song 1, m. 18 (Verse 1). The current line and the faded next line.
+4. **Measure Follow-Along, rest countdown:** Song 1, m. 52 during the 8-measure interlude rest. "Tenor enters in 5", with m. 57 faded at the right.
+5. **Lyrics:** the Chorus is current, with Verse 2 above it and the Interlude below, both dimmed. A−/A+ in the header.
+6. **View-mode menu** open on a page-image song (Song 2), so Measure is disabled with "Needs MusicXML".
 7. **Whole score** browse view.
-8. **Settings** sheet (§8), with the Loops toggle **on**.
+8. **Settings** sheet (§8), with Loops **on** and Song 1's loops listed.
 9. **Loop list** sheet, opened from the loop chip (§9).
-10. **Practice Loop Active**: Measure view on Song 1 with "Bridge entrance" (m. 39–44) active. Show the banner, the shaded range on the ribbon (which also covers the end of the rest and the re-entry), the range on the scrub bar, and the loop chip showing the loop name.
-11. **Lock screen / media notification** (Android): song title, "Tenor rehearsal" as the artist, a simple square artwork (a dark tile with a small steel-blue note mark), and prev / play-pause / next with the system seek bar. Prev and next step between songs, the same as ⏮ and ⏭ in the player (§4).
+10. **Practice Loop Active:** Measure view on Song 1 with "Bridge entrance" (m. 55–60) active. Show the banner, the shaded range on the ribbon (covering the end of the rest and the re-entry), the range on the scrub bar, and the loop chip showing the loop name.
+11. **Lock screen / media notification** (Android): song title, "Tenor rehearsal", the artwork (a dark tile with a steel-blue note), and prev / play-pause / next with the system seek bar. Android 16 draws the artwork as the card's background.
 12. **Song without timing yet** (Song 4): the lyrics show as a static scrolling list with a subtle notice, "Timing not set — not synced". The audio still plays normally.
-13. **Setup: Timing & Loops** (desktop, §11), in two states:
-    - 13a. Section marking.
-    - 13b. Per-measure pass on m. 65–72.
+13. **Setup page** (desktop, §16): marking section starts, and a per-measure pass on m. 81–88.
 
 ### Back gesture (annotate on frames 2, 6, 8, 9)
 
-Android back closes the open sheet or menu and nothing more. From the player with nothing open, back leaves the app as normal. In the build, each sheet pushes a history entry when it opens.
+Android back closes the open sheet or menu and nothing more. From the player with nothing open, back leaves the app as normal. Each sheet pushes a history entry when it opens.
 
 ---
 
 ## 8. Settings sheet
 
-It's a bottom sheet with three groups and a footer.
+A bottom sheet with three groups and a footer.
 
 - **Playback**
-  - Speed: a segmented control with `0.75×`, `0.85×`, `1.0×`, `1.1×`. Pitch is kept.
-  - Skip interval: 10 s (fixed; shown read-only).
-  - Continue to next song: toggle, off.
+  - Speed: a slider from `0.5×` to `1.5×` in `0.1×` steps, default `1.0×`. "Pitch kept" underneath.
+  - Skip interval: 5 s (fixed; shown read-only).
+  - Repeat: `Off` · `This song` · `All songs`, default Off. Help line for Off: "Plays through to the end of the last song, then stops."
 - **Display**
   - View mode: Score / Lyrics / Score + Lyrics / Measure (Measure disabled on page-image songs).
   - Lyrics size: A− · 22 · A+.
   - Keep screen on while playing: toggle, on.
 - **Practice loops**
   - Show loops: toggle, off by default. When it's on, the loop chip appears in the player bar.
-  - A help line underneath: "Loops are set in Setup and assigned by your teacher."
-- **Footer:** "✓ Available offline · 4 songs" in `text-2`, then the credit line (placeholder text) in `text-3`.
+  - When it's on, the current song's loops are listed below the toggle, in the same row style as the loop list (§9). Tapping one starts it and closes the sheet.
+  - A song with no loops: "No loops for this song yet."
+  - Help line: "Loops are assigned by your teacher."
+  - Turning the toggle off stops any active loop and hides the chip, but remembers the selected loop.
+- **Footer:** the offline status line (§19) in `text-2`, then the credit line in `text-3`.
 
 ## 9. Loop list sheet
 
-This is a short sheet titled "Practice loops — Song 1".
+A short sheet titled "Practice loops — Song One", opened from the loop chip.
 
-Each row shows the loop name (15 / 500), the range in `text-2` (for example, "m. 39–44 · 0:17"), and an optional teacher note on a second line in `text-3`. Tapping a row starts the loop and closes the sheet. The active loop's row has an `accent` left bar and a "Stop" text button. A song with no loops shows "No loops for this song."
+Each row shows the loop name (15 / 500), the range in `text-2` (for example, "m. 55–60 · 0:17"), and an optional teacher note on a second line in `text-3`. Tapping a row starts the loop and closes the sheet. The active loop's row has an `accent` left bar and a "Stop" text button. A song with no loops shows "No loops for this song yet."
+
+### Loop behavior
+
+- **Boundaries.** A loop is an inclusive measure range. Its start time is the start of its first measure; its end time is the start of the measure after its last one, or the song's end when the loop ends on the final measure.
+- **Starting.** Selecting a loop seeks to its start (unless playback is already inside it) and plays.
+- **Wrapping.** Reaching the end time seeks to the exact start. Detection uses frequent `timeupdate` checks, not one long timer, and stays correct at every speed. (The PoC measured wrap overshoot of about 0.14–0.18 s on the Pixel 7, screen on or off.)
+- **Seeking outside.** Allowed. A seek or skip that lands outside the loop suspends it until the next Play, which jumps back to the loop start.
+- **Relaunch.** The selected loop per song is remembered, but the app reopens with no loop running.
+- **Repeat setting.** An active loop wins over Repeat.
 
 ---
 
@@ -222,132 +254,472 @@ Lyrics are original placeholder text. Don't substitute real lyrics.
 | # | Title (placeholder) | Length | Score format | Timing |
 |---|---|---|---|---|
 | 1 | Song One | 4:18 | MusicXML | Sections and per-measure marks |
-| 2 | Song Two | 3:05 | Page images | Sections |
+| 2 | Song Two | 3:05 | Page images (starts with a pickup, m. 0) | Sections |
 | 3 | Song Three | 2:47 | Page images | Sections |
 | 4 | Song Four | 3:32 | Page images | Not set |
 
-**Song 1 structure** (4/4, about 84 bpm, with a repeat)
+**Song 1 structure** (4/4, about 84 bpm, so a measure lasts 2.857 s)
 
-| Section | Measures | Pass | Starts | Tenor |
-|---|---|---|---|---|
-| Intro | 1–8 | 1 | 0:00 | Rest (8 measures) |
-| Verse 1 | 9–24 | 1 | 0:23 | Sings |
-| Verse 2 | 9–24 | 2 | 1:09 | Sings (repeat of m. 9–24) |
-| Chorus | 25–32 | 1 | 1:55 | Sings |
-| Interlude | 33–40 | 1 | 2:17 | Rest (8 measures) |
-| Bridge | 41–56 | 1 | 2:40 | Sings (enters m. 41) |
-| Final chorus | 57–68 | 1 | 3:26 | Sings |
-| Ending | 69–72 | 1 | 4:00 | Sings; ritardando, fermata on m. 71 |
+| Section | Measures | Starts | Tenor |
+|---|---|---|---|
+| Intro | 1–8 | 0:00 | Rest (8 measures) |
+| Verse 1 | 9–24 | 0:23 | Sings |
+| Verse 2 | 25–40 | 1:09 | Sings |
+| Chorus | 41–48 | 1:54 | Sings |
+| Interlude | 49–56 | 2:17 | Rest (8 measures) |
+| Bridge | 57–72 | 2:40 | Sings (enters m. 57) |
+| Final chorus | 73–84 | 3:26 | Sings |
+| Ending | 85–88 | 4:00 | Sings; ritardando, fermata on m. 87 |
 
 **Song 1 loops**
 
-- **Bridge entrance**, m. 39–44. Note: "Count the rest, come in clean on 41."
-- **Final hold**, m. 67–72. Note: "Hold through the fermata, watch the cutoff."
+- **Bridge entrance**, m. 55–60. Note: "Count the rest, come in clean on 57."
+- **Final hold**, m. 83–88. Note: "Hold through the fermata, watch the cutoff."
 
-**Placeholder lyrics**
+**Placeholder lyric phrases**
 
-- Verse 1: "Morning comes across the river, / every lantern burning low."
-- Verse 2: "Evening falls along the meadow, / every field is turning gold."
-- Chorus: "Carry me home, carry me home, / over the hill where the tall grass grows."
-- Bridge: "Long is the road, but the light remains."
-- Final chorus: "Carry me home, carry me home."
-- Ending: "Home."
-
----
-
-## 11. Setup: Timing & Loops (desktop)
-
-This is where timing is created. It's desktop-only and not linked from the phone UI (the URL is `/rehearsal/setup`).
-
-**Layout at 1440 × 900**
-
-- **Top bar:** a song picker, the score format badge ("MusicXML" or "Page images"), and Save.
-- **Waveform**, full width:
-  - Section markers appear as labeled flags.
-  - Measure positions appear as ticks below the waveform. **Solid ticks are tapped marks. Hollow ticks are interpolated.**
-  - A second pass through repeated measures is labeled with "· 2nd".
-- **Transport:** play/pause, speed, and a large **Tap** button (spacebar).
-- **Mode switch:** `Sections` | `Measures`.
-  - *Sections:* each tap marks the start of the next section.
-  - *Measures* (the per-measure pass): choose a range ("from m. 65 to m. 72"). Each tap marks the next measure in playback order.
-- **Tap offset** (per song): a value field (for example, `−0.15 s`) plus a "Calibrate" button. Calibrate has you tap 8 times along with a click track and sets the offset from the average lag. The offset applies to every tapped mark.
-- **Left column: sections list.** Each row shows the name, the measure and pass, the timestamp, ±0.1 s nudges, and Re-mark.
-- **Right column: loops list.** Each row shows the name, the range, and the note. Each boundary shows its timing status: "start ✓ marked" or "end ⚠ interpolated — Mark". New loops ask for both boundaries to be tapped.
-- **Bottom: preview strip.** A live mini measure ribbon plays in sync, so drift shows up while you watch.
-
-**Workflow this screen supports:**
-
-1. Mark the sections for the whole song.
-2. Play it back and watch the preview strip.
-3. Run the per-measure pass only where it visibly drifts (usually endings and held notes).
-4. Mark the loop boundaries.
-
-Through long tenor rests, section marks plus interpolation are enough. The mark that matters is the measure where the tenor re-enters.
+| Section | Measures | Phrase |
+|---|---|---|
+| Verse 1 | 9–16 | Morning comes across the river, |
+| Verse 1 | 17–24 | every lantern burning low. |
+| Verse 2 | 25–32 | Evening falls along the meadow, |
+| Verse 2 | 33–40 | every field is turning gold. |
+| Chorus | 41–44 | Carry me home, carry me home, |
+| Chorus | 45–48 | over the hill where the tall grass grows. |
+| Bridge | 57–64 | Long is the road, |
+| Bridge | 65–72 | but the light remains. |
+| Final chorus | 73–84 | Carry me home, carry me home. |
+| Ending | 85–88 | Home. |
 
 ---
 
-## 12. Time map and data model
+## 11. Playback behavior
 
-The mockup doesn't render this, but the setup screen and the ribbon behavior depend on it.
+### Engine
 
-**Rules**
+- Exactly one `<audio>` element, behind one playback module that owns the state.
+- `audio.currentTime` is the only clock. Musical position is never derived from animation frames or wall-clock time.
+- Views update with `requestAnimationFrame` while visible and from `timeupdate` while hidden.
+- Speed: `playbackRate` 0.5–1.5 with `preservesPitch` on. Set both `playbackRate` and `defaultPlaybackRate` after every `src` change (the PoC found the load algorithm resets them).
 
-- **The time map is ordered by playback.** Each entry is `{ seq, measure, pass, time, source }`. A repeated measure appears once per pass. Measure numbers alone are **not** unique in time.
-- **Measure numbers count through rests**, exactly as in the full score. A multi-measure rest covering m. 33–40 still takes up 8 measure numbers.
-- Sections, lyrics, and loops point at `{ measure, pass }`.
-- **Interpolation:** between two entries, measures are spaced evenly in time. A tapped entry always overrides an interpolated one.
-- `source` is `"section"`, `"tap"`, or `"interpolated"`. This drives the solid and hollow ticks in Setup.
-- Tap offset is stored per song and applied when a tap is recorded.
-- Rest ranges come from MusicXML. Page-image songs don't have them, which is why Measure mode (and with it the countdown) is MusicXML-only.
+### Commands
 
-**Shape (example)**
+| Command | Behavior |
+|---|---|
+| Play | Start at the current position. At the end, seek to 0 first. With a suspended loop, jump to the loop start. |
+| Pause | Stop without changing position. |
+| Seek | Clamp to the song. Update the musical position immediately. |
+| Skip | ±5 s, then clamp to the song. |
+| ⏮ | Restart if more than 3 s in; otherwise the previous song (wrapping). |
+| ⏭ | The next song (wrapping). |
+| Song change | From the sheet, ⏮/⏭ or the lock screen: load the new song at 0:00 and play. Any active loop stops. |
+| End of song | Repeat Off: play the next song, stopping after the last. This song: restart. All songs: play the next song, wrapping. |
+
+### Launch and persistence
+
+- Launch opens the last song at 0:00, paused. Never autoplay.
+- Persisted (in `localStorage`, small enough not to need IndexedDB): last song, view mode, speed, lyrics size, Repeat, Keep screen on, the Loops toggle, and the selected loop per song.
+- Playback position is **not** persisted: every song starts at 0:00.
+- A missing or corrupt stored state falls back to defaults.
+
+### Interruptions
+
+- On a phone call or competing audio, follow the platform and show the real paused state. Never resume automatically.
+- After returning to the foreground, re-read state from the audio element.
+- Keep screen on uses the Screen Wake Lock API while playing, re-requested when the page becomes visible.
+
+---
+
+## 12. Timing model
+
+### Concepts
+
+- A **measure** is the printed measure number (m. 0 for a pickup). Numbers continue through tenor rests.
+- A **section** is a named inclusive measure range with a required start-time anchor.
+- A **timing anchor** is an explicit timestamp for the start of a measure.
+- An **inferred boundary** is a measure start calculated between two anchors.
+
+### Required anchors
+
+- The first measure, at its audible start.
+- The first measure of every section.
+- A **terminal** anchor: the song duration, assigned to the measure after the last one.
+- Extra anchors wherever drift is visible, especially ritardandos, fermatas, held endings, and the measure where the tenor re-enters after a rest.
+
+### Interpolation
+
+Between anchors at measures `a` and `b` (times `tA`, `tB`), for `a < m < b`:
+
+```text
+uniform:        time(m) = tA + ((m − a) / (b − a)) × (tB − tA)
+notated beats:  time(m) = tA + (beats from a to m / beats from a to b) × (tB − tA)
+```
+
+Notated beats is available for MusicXML songs (it handles time-signature changes). Explicit anchors always win. Interpolation is only for display; audio is never stretched.
+
+### Runtime lookup
+
+- When a song loads, precompute a sorted boundary table for every measure, each marked explicit or inferred.
+- Find the current measure by binary search for the last boundary ≤ `currentTime`.
+- Derive the current section, phrase, rest and loop from the measure. Views never compute timing themselves; they ask the timing module.
+
+### Accuracy targets
+
+- Anchors are stored to 0.01 s; the setup page shows tenths.
+- Section changes: within ±250 ms of the audible event.
+- Measure changes in refined passages: within ±200 ms, or ±100 ms where a loop boundary depends on it.
+
+### Validation (checked when a song loads, and by the setup page)
+
+- Anchor measures and times strictly increase; anchors lie within the audio's duration.
+- Sections don't overlap and cover the song's measures (a gap is a warning).
+- Lyric phrases don't overlap.
+- Rest ranges don't overlap, and each entrance measure comes after its rest (unless the rest runs to the end).
+- Every loop lies within known measures.
+- Referenced files exist. The declared duration matches the decoded audio within 1 s.
+- A song that fails validation still plays its audio; the synced views show "Timing not set — not synced".
+
+---
+
+## 13. Tenor score
+
+### Page images (interim format)
+
+- Ordered page images.
+- Section regions: rectangles normalized to the page (`x`, `y`, `width`, `height` in 0–1), each with its measure range.
+- Score and Score + Lyrics use the section regions. Whole Score shows complete pages.
+- No Measure view (no per-measure regions in v1).
+
+### MusicXML
+
+- Render only the tenor part. Keep printed measure numbers (including m. 0), clef, key and time signatures, lyrics and multi-measure rests.
+- Measure view lays out its own ribbon, independent of page rendering.
+- If a future song has repeats, flatten them to playback order when preparing the content.
+
+### Rest ranges
+
+Rest ranges are stored explicitly, even when MusicXML could imply them, because they drive the countdown:
+
+- start and end measure (inclusive);
+- entrance measure, normally end + 1;
+- an optional label.
+
+The setup page can propose rest ranges from MusicXML (measures with no pitched notes); a person confirms them.
+
+---
+
+## 14. Lyrics
+
+- Lyrics are **phrases**, grouped by section. Each phrase covers an inclusive measure range; optional exact start/end times override the measure timing.
+- The current phrase is the one whose range contains the current measure. Rests may have no current phrase.
+- MusicXML syllables feed Measure view; the curated phrases feed Lyrics and Score + Lyrics.
+- Punctuation, capitalization, apostrophes and hyphenation are kept as written.
+
+---
+
+## 15. Content and data
+
+### Where content lives
+
+The arrangements and recordings are copyrighted and the repo is public:
+
+- **`content/`** (gitignored) holds the real catalog, song files, audio, score images and MusicXML. It's uploaded to the server by hand.
+- **`content.example/`** (in git) holds the placeholder Song One–Four from §10, so the app runs without real content.
+
+```text
+content/
+├── catalog.json
+├── songs/song-1.json …
+├── audio/song-1.mp3 …
+└── score/song-1.musicxml, song-2/page-1.webp …
+```
+
+### Catalog
+
+```json
+{
+  "catalogRevision": "2026-10-08.1",
+  "album": "Tenor Choir · Fall 2026",
+  "songs": [
+    { "id": "song-1", "src": "songs/song-1.json" },
+    { "id": "song-2", "src": "songs/song-2.json" },
+    { "id": "song-3", "src": "songs/song-3.json" },
+    { "id": "song-4", "src": "songs/song-4.json" }
+  ]
+}
+```
+
+The array order is the song order.
+
+### Song file
 
 ```json
 {
   "id": "song-1",
   "title": "Song One",
+  "durationSeconds": 258.0,
+  "measures": { "first": 1, "last": 88 },
   "audio": "audio/song-1.mp3",
-  "score": { "format": "musicxml", "src": "scores/song-1.musicxml" },
-  "tapOffset": -0.15,
+  "score": { "format": "musicxml", "src": "score/song-1.musicxml", "partId": "P1" },
   "sections": [
-    { "name": "Verse 1", "start": { "measure": 9, "pass": 1 } },
-    { "name": "Verse 2", "start": { "measure": 9, "pass": 2 } }
+    { "id": "intro", "label": "Intro", "from": 1, "to": 8 },
+    { "id": "verse-1", "label": "Verse 1", "from": 9, "to": 24 },
+    { "id": "verse-2", "label": "Verse 2", "from": 25, "to": 40 },
+    { "id": "chorus", "label": "Chorus", "from": 41, "to": 48 },
+    { "id": "interlude", "label": "Interlude", "from": 49, "to": 56 },
+    { "id": "bridge", "label": "Bridge", "from": 57, "to": 72 },
+    { "id": "final-chorus", "label": "Final chorus", "from": 73, "to": 84 },
+    { "id": "ending", "label": "Ending", "from": 85, "to": 88 }
   ],
-  "timeMap": [
-    { "seq": 0,  "measure": 1,  "pass": 1, "time": 0.00,   "source": "section" },
-    { "seq": 8,  "measure": 9,  "pass": 1, "time": 22.86,  "source": "section" },
-    { "seq": 24, "measure": 9,  "pass": 2, "time": 68.57,  "source": "section" },
-    { "seq": 56, "measure": 41, "pass": 1, "time": 160.00, "source": "tap" }
-  ],
-  "loops": [
-    { "name": "Bridge entrance",
-      "from": { "measure": 39, "pass": 1 }, "to": { "measure": 44, "pass": 1 },
-      "note": "Count the rest, come in clean on 41." }
+  "timing": {
+    "interpolation": "uniform",
+    "anchors": [
+      { "measure": 1,  "time": 0.00,   "source": "section" },
+      { "measure": 9,  "time": 22.86,  "source": "section" },
+      { "measure": 25, "time": 68.57,  "source": "section" },
+      { "measure": 41, "time": 114.29, "source": "section" },
+      { "measure": 49, "time": 137.14, "source": "section" },
+      { "measure": 57, "time": 160.00, "source": "measure" },
+      { "measure": 73, "time": 205.71, "source": "section" },
+      { "measure": 85, "time": 240.00, "source": "section" },
+      { "measure": 87, "time": 247.50, "source": "measure" },
+      { "measure": 89, "time": 258.00, "source": "terminal" }
+    ]
+  },
+  "rests": [
+    { "from": 1, "to": 8, "entrance": 9 },
+    { "from": 49, "to": 56, "entrance": 57 }
   ],
   "lyrics": [
-    { "section": "Verse 1", "lines": ["Morning comes across the river,", "every lantern burning low."] }
+    { "id": "v1-1", "section": "verse-1", "from": 9, "to": 16, "text": "Morning comes across the river," },
+    { "id": "v1-2", "section": "verse-1", "from": 17, "to": 24, "text": "every lantern burning low." }
+  ],
+  "loops": [
+    { "id": "bridge-entrance", "name": "Bridge entrance", "from": 55, "to": 60,
+      "note": "Count the rest, come in clean on 57." }
   ]
 }
 ```
 
+- `source` is `"section"`, `"measure"`, `"nudge"` or `"terminal"`. The setup page draws explicit and inferred boundaries differently.
+- A page-image song replaces `score` with `{ "format": "page-images", "pages": [{ "id", "src" }], "regions": [{ "id", "page", "section", "rect": { "x", "y", "width", "height" } }] }`.
+- A song with no timing yet has an empty `anchors` array; the app shows it unsynced (§7 frame 12).
+- IDs are lowercase kebab-case and don't change when labels change.
+- Measures are integers ≥ 0.
+
 ---
 
-## 13. Lock screen and background playback
+## 16. Setup page (desktop)
 
-- Media Session metadata is set **once per track**: title is the song title, artist is "Tenor rehearsal", album is "Tenor Choir · Fall 2026", plus the artwork tile.
-- The action handlers are play, pause, previous track, next track, seek backward and forward (10 s), and seek to.
-- Previous track and next track step between songs, exactly like ⏮ and ⏭ in the player (§4): previous restarts the current song if playback is more than 3 s in, otherwise it goes to the previous song; next goes to the next song and wraps from the last to the first.
-- When a song ends, playback stops unless "Continue to next song" (§8) is on.
+Timing is created here. It's at `/rehearsal/setup/`, desktop-only and not linked from the phone UI.
+
+### Version 1: light
+
+The full tool waits until the player works. Version 1 is a single page, based on the PoC's **Mark** button:
+
+- Pick a song; its audio, sections and MusicXML or page images load from `content/`.
+- Play at any speed, with a large **Mark** button (and the spacebar). A mode switch chooses what a tap marks:
+  - **Sections:** the start of the next section.
+  - **Measures:** pick a range ("m. 81 to m. 88"); each tap marks the next measure. Long rests can be skipped; the re-entry measure is the one to mark.
+- A list of marks with ±0.1 s nudges, Re-mark and Undo.
+- Preview: a mini measure ribbon or section label playing in sync, so drift shows while you watch.
+- Rest ranges proposed from MusicXML, to confirm.
+- Loops added by measure range, with their computed times shown read-only.
+- Validate (§12), then **Copy JSON** / **Download JSON**. The rest of the song file is edited by hand.
+
+No tap-offset calibration; add it only if tapped marks turn out consistently late.
+
+### Later: the full tool
+
+The Oct 3 mockup's 1440 × 900 layout: song picker, format badge and Save in the top bar; a waveform with section flags and measure ticks (solid = tapped, hollow = inferred); sections list on the left; loops list on the right with each boundary's status ("start ✓ marked", "end ⚠ inferred — Mark"); a preview strip at the bottom.
+
+### Workflow
+
+1. Mark the sections for the whole song.
+2. Play it back and watch the preview.
+3. Run the per-measure pass only where it visibly drifts (usually endings, held notes and re-entries after rests).
+4. Add loops when the teacher assigns them.
+
+---
+
+## 17. Architecture
+
+### Stack
+
+Plain HTML, CSS and JavaScript, with no build step and no framework. Code is split into ES modules (`<script type="module">`) served as separate files. Third-party code (the MusicXML renderer) is vendored into the repo, not loaded from a CDN, so it works offline.
+
+### Layout
+
+```text
+app/                    the player, uploaded to /rehearsal/
+├── index.html
+├── styles.css
+├── manifest.webmanifest
+├── sw.js               service worker (§19)
+├── icons/
+└── js/
+    ├── main.js         wiring and UI state
+    ├── playback.js     the audio element, commands, Media Session
+    ├── timing.js       anchors → measure boundaries, lookups
+    ├── loops.js        loop boundaries and wrapping
+    ├── content.js      loading and validating catalog and songs
+    ├── settings.js     persisted preferences
+    ├── views/          score, lyrics, score-lyrics, measure, whole-score
+    └── score/          page-images.js, musicxml.js
+setup/                  the setup page, uploaded to /rehearsal/setup/
+vendor/                 the MusicXML renderer
+content/                real content (gitignored)
+content.example/        placeholder content
+tests/                  node:test unit tests
+poc/                    the proof of concept (uploaded to /rehearsal/poc/)
+docs/
+```
+
+`timing.js` and `loops.js` have no DOM code, so the same files run in the browser, in the setup page, and under `node --test`.
+
+### State
+
+- **Playback:** what the audio element reports (playing, time, duration, rate, errors).
+- **Musical position:** section, measure, phrase, rest and loop, derived from time by `timing.js`.
+- **UI:** view, open sheet, manual-scroll state, banners.
+- **Preferences:** the persisted settings (§11).
+- **Content:** the catalog revision, the current song, validation and offline status.
+
+### MusicXML renderer
+
+Test OpenSheetMusicDisplay (OSMD) and Verovio on the Pixel with the real tenor MusicXML before choosing. Check tenor-only rendering, access to measure positions for the ribbon, multi-measure rests, readability, and load time.
+
+### Security and privacy
+
+- HTTPS only (needed for the service worker and Media Session).
+- No analytics, no third-party requests, no personal data.
+- Rendered text from content files is escaped.
+
+---
+
+## 18. Lock screen and background playback
+
+Verified on a Pixel 7 (Android 16, Chrome 153) with the PoC.
+
+- Media Session metadata is set **once per track**: title is the song title, artist is "Tenor rehearsal", album is "Tenor Choir · Fall 2026", and the artwork is a 512 × 512 PNG (dark tile, steel-blue note). Android doesn't show the album; Android 16 draws the artwork as the media card's background.
 - The metadata never changes during a track. Changing it can make Android redraw the notification.
+- Action handlers: play, pause, previous track, next track, seek backward and forward, and seek to.
+  - Previous and next work exactly like ⏮ and ⏭ (§11).
+  - Seek backward/forward skip 5 s. Android sends no `seekOffset`, so the app's value is what applies.
+- Playback continues with the screen off; loops keep wrapping while hidden.
+- When playback stops at the end, Chrome removes the media notification. With Repeat Off this happens only after the last song.
 
-## 14. Prototype notes (next step after the mockup)
+---
 
-- Build a single HTML file. It can run on a simulated clock for screen flows.
-- **Lock-screen and background behavior can't be tested on a simulated clock.** For that, drive it from a real `<audio>` element with a short test MP3, or confirm the existing proof of concept already covers it.
-- On an Android phone, check:
-  - ribbon size and paging
-  - the chip row at 360 dp
-  - the rest countdown
-  - loop chip show/hide
-  - back-gesture behavior with each sheet open
-- Afterward, update the project brief: tenor-only score, tenor rests, the playback-ordered time map, the per-measure pass and tap offset, loop boundary marks, static lock-screen metadata, and Car Mode removed.
+## 19. Offline
+
+### What's saved
+
+- The app shell (HTML, CSS, JS modules, renderer, icons) and the catalog.
+- Every song's JSON, audio and score files. All four songs are saved automatically after the first load; there's no download button.
+
+### Service worker
+
+- Hand-written, versioned by the catalog revision.
+- App files: served from the cache, refreshed in the background.
+- Audio: saved whole (a `200`, never a `206`). The audio element's Range requests are answered by slicing the cached file into a `206` response with `Content-Range`. The PoC proved this keeps seeking working with the server gone (desktop Chrome; the Pixel test is pending).
+- A new catalog revision downloads in the background and is used on the next launch, never mid-playback. The previous revision stays until the new one is complete.
+- Request persistent storage (`navigator.storage.persist()`) but don't depend on it.
+
+### Status line (Settings footer)
+
+| Text | Meaning |
+|---|---|
+| `✓ Available offline · 4 songs` | All four songs and the app shell are saved. |
+| `Saving for offline… 2 of 4` | Saving is in progress. |
+| `Online only` | Saving can't run (no service worker or no space). |
+| `Offline files need refresh` | A newer revision is known but not complete; the older one still works. |
+
+Launching offline without a song's audio saved shows "This song isn't available offline yet" and disables Play for that song only.
+
+---
+
+## 20. Open questions
+
+1. **Clef.** The first MusicXML source writes the tenor line in bass clef. Show it as written, or convert to treble clef with an 8 below (the spec's default)?
+2. **Song Four's part.** Its recording features Tenor 2. Should the score show the Tenor 2 line?
+3. **Ribbon motion** (§6): line paging or continuous? Decide on the phone.
+4. **Colors** (§3): decide on the phone.
+5. **MusicXML renderer** (§17): OSMD or Verovio, after the phone test.
+6. **Offline on the phone.** The PoC's offline checkpoint passed on desktop; it still needs the Pixel test, including a cold launch with no network.
+7. **Installed PWA.** Background playback and media controls when launched from the home screen, not a Chrome tab.
+8. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
+
+---
+
+## 21. Implementation phases
+
+1. **Device proof (nearly done).** The PoC covers background playback, media controls, metadata, artwork and loop wrapping on the Pixel. Remaining: the offline test on the phone, installed-PWA mode, and the renderer comparison.
+2. **Clickable prototype.** A single HTML file on a simulated clock with the placeholder data: all views, sheets, both ribbon motions, the rest countdown, loops, and the 360 dp chip row. Use it to choose colors and ribbon motion.
+3. **Playback and timing core.** Real audio, the playback module, `timing.js` and `loops.js` with unit tests, settings persistence, song switching and Repeat. One song works end to end online.
+4. **Page-image content.** Section crops, Whole Score, validation, Settings, lyrics size and error states. All four songs usable.
+5. **Setup page (light).** Marking, nudges, per-measure pass, rest proposals, loops, preview, validate, JSON export.
+6. **MusicXML Measure view.** The tenor-only adapter, ribbon, next line, syllables and multi-measure rests. Songs move over one at a time.
+7. **Offline and PWA.** Manifest, service worker, revision caches, status line, update flow.
+8. **Polish and release.** Accessibility, small screens, reduced motion, long-session stability, and the release checklist.
+
+---
+
+## 22. Testing
+
+### Unit tests (`node --test`, no dependencies)
+
+- Time-to-measure lookup at exact boundaries, between anchors, and at the song's end; uniform and notated-beat interpolation; a pickup at m. 0.
+- Rest countdown before, during, and at the entrance.
+- Loop boundaries (inclusive range to end time), wrapping, suspension after an outside seek.
+- Section and phrase lookup.
+- Content validation rules (§12).
+- Settings fallback when stored state is missing or corrupt.
+
+### Browser checks
+
+- Launch, restore, one-tap play.
+- Play/pause, seek, ±5 s, speed changes, ⏮/⏭ including wrap and the 3 s rule, Repeat modes.
+- Switching views during playback without a time reset.
+- Loops: enable, select, wrap, seek outside, cancel, disable.
+- Offline load, uncached song, update flow.
+- Score render failure with uninterrupted audio.
+- Layouts at 360 × 800 and 412 × 915, plus landscape.
+
+### On the Pixel
+
+- Chrome tab and installed PWA.
+- Screen locked for 5+ minutes while playing.
+- Lock-screen and notification controls, metadata and artwork.
+- A phone call or competing audio: no automatic resume.
+- Airplane-mode cold launch after everything is saved.
+- Rotation during playback and with a sheet open.
+- Bluetooth headphone and watch controls.
+- Pitch at 0.5× and 1.5×.
+- Ribbon readability and control reach at arm's length.
+
+### Content QA, per song
+
+Every section start against the recording; every interpolated stretch sampled for drift; lyric text and ranges; every rest countdown and entrance; every loop listened through; measure numbers against the printed score.
+
+---
+
+## 23. Acceptance criteria
+
+- [ ] Opens directly to the last song at 0:00, paused, playable with one tap. No library or download screen.
+- [ ] Header has the title button and ⚙ only; no left chevron.
+- [ ] Switch Song lists the four songs with durations; picking one plays it from 0:00.
+- [ ] ⏮/⏭ step between songs with wrap and the 3 s restart rule, in the app and on the lock screen.
+- [ ] Repeat Off / This song / All songs behave as specified at the end of each song.
+- [ ] Speed 0.5–1.5× keeps pitch on the Pixel.
+- [ ] Skip is 5 s everywhere, including the lock screen.
+- [ ] All views reachable; Measure disabled honestly on page-image songs; Whole Score never auto-scrolls.
+- [ ] No SATB, part picker, Car Mode or A–B controls anywhere.
+- [ ] Steel blue only on current position, progress, play ring and active toggles; loop shading neutral.
+- [ ] Rests hold on the rest and count down correctly; numbering continues through rests.
+- [ ] Loops: off by default, chip only when on, banner and scrub range when active, correct wrap at every speed, × stops the loop without turning the feature off.
+- [ ] Lock screen: title, "Tenor rehearsal", artwork; metadata never changes mid-track; playback survives screen lock.
+- [ ] Airplane-mode cold launch plays all four songs, with seeking.
+- [ ] The offline status line is truthful.
+- [ ] Touch targets ≥ 48 dp; contrast meets WCAG 2.2 AA; reduced motion honored.
+- [ ] The setup page can mark sections, refine a passage per measure, add loops, and export valid JSON.

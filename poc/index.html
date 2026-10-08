@@ -48,8 +48,8 @@
 
 <div class="row">
   <button id="prev" type="button">Prev</button>
-  <button id="back10" type="button">&minus;10&nbsp;s</button>
-  <button id="fwd10" type="button">+10&nbsp;s</button>
+  <button id="back5" type="button">&minus;5&nbsp;s</button>
+  <button id="fwd5" type="button">+5&nbsp;s</button>
   <button id="next" type="button">Next</button>
   <label>Speed
     <select id="speed">
@@ -81,6 +81,12 @@
     <div id="scoreBox" hidden></div>
   </div>
 </section>
+
+<div class="row">
+  <button id="saveOffline" type="button">Save for offline</button>
+  <button id="removeOffline" type="button">Remove offline copy</button>
+  <span id="offlineStatus">Offline: checking…</span>
+</div>
 
 <div class="row">
   <button id="mark" type="button">Mark</button>
@@ -159,7 +165,7 @@
   var tracks = CONFIG.tracks;
   var idx = 0;
   var rate = 1;
-  var continueToNext = CONFIG.continueToNext === true;
+  var continueToNext = CONFIG.continueToNext !== false;   // on unless config turns it off
   var activeLoop = null;     // CONFIG.loops entry currently looping, if any
   var loopA = null, loopB = null;
   var lastT = 0;            // currentTime at the previous timeupdate (reset on seeked)
@@ -512,13 +518,104 @@
   action('pause', function () { audio.pause(); });
   action('previoustrack', function () { prev(); });
   action('nexttrack', function () { next(); });
-  action('seekbackward', function (d) { seekTo(audio.currentTime - (d.seekOffset || 10)); });
-  action('seekforward', function (d) { seekTo(audio.currentTime + (d.seekOffset || 10)); });
+  action('seekbackward', function (d) { seekTo(audio.currentTime - (d.seekOffset || 5)); });
+  action('seekforward', function (d) { seekTo(audio.currentTime + (d.seekOffset || 5)); });
   action('seekto', function (d) {
     if (d.seekTime == null) return;
     if (d.fastSeek && 'fastSeek' in audio) audio.fastSeek(d.seekTime);
     else seekTo(d.seekTime);
   });
+
+  // ---- Offline: sw.js serves the page and saved MP3s; this page does the saving ----
+  var AUDIO_CACHE = 'poc-audio-v1';   // must match sw.js
+  var swOn = 'serviceWorker' in navigator && 'caches' in window;
+
+  function absUrl(src) { return new URL(src, location.href).href; }
+
+  function offlineStatus() {
+    if (!swOn) { $('offlineStatus').textContent = 'Offline: not supported here'; return; }
+    Promise.all(tracks.map(function (tr) {
+      return caches.match(absUrl(tr.src), { cacheName: AUDIO_CACHE });   // doesn't create the cache
+    })).then(function (hits) {
+      var n = hits.filter(Boolean).length;
+      var est = (navigator.storage && navigator.storage.estimate) ? navigator.storage.estimate() : Promise.resolve(null);
+      return est.then(function (e) {
+        $('offlineStatus').textContent = 'Offline: ' + n + '/' + tracks.length + ' songs saved' +
+          (e ? ' · ' + (e.usage / 1e6).toFixed(1) + ' MB used' : '') +
+          (navigator.serviceWorker.controller ? '' : ' · page not under service worker yet');
+      });
+    });
+  }
+
+  // Saves each track's MP3 whole (a 200, never a 206), one at a time.
+  function saveOffline() {
+    if (!swOn) return;
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().then(function (ok) { log('persistent storage ' + (ok ? 'granted' : 'not granted')); });
+    }
+    var t0 = performance.now();
+    caches.open(AUDIO_CACHE).then(function (cache) {
+      return tracks.reduce(function (p, tr) {
+        return p.then(function () {
+          var url = absUrl(tr.src);
+          return cache.match(url).then(function (hit) {
+            if (hit) return;
+            var t = performance.now();
+            return fetch(url).then(function (res) {
+              if (res.status !== 200) throw new Error('HTTP ' + res.status);
+              var len = Number(res.headers.get('Content-Length'));
+              return cache.put(url, res).then(function () {
+                log('saved for offline: ' + tr.src + ' (' + (len ? (len / 1e6).toFixed(2) + ' MB, ' : '') +
+                  ((performance.now() - t) / 1000).toFixed(1) + ' s)');
+              });
+            }).catch(function (e) { log('save for offline failed: ' + tr.src + ': ' + e.message, 'err'); });
+          });
+        });
+      }, Promise.resolve());
+    }).then(function () {
+      log('save for offline done (' + ((performance.now() - t0) / 1000).toFixed(1) + ' s)');
+      offlineStatus();
+    });
+  }
+
+  function removeOffline() {
+    if (!swOn) return;
+    caches.keys().then(function (keys) {
+      return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+    }).then(function () {
+      return navigator.serviceWorker.getRegistrations();
+    }).then(function (regs) {
+      return Promise.all(regs.map(function (r) { return r.unregister(); }));
+    }).then(function () {
+      log('offline copy removed: caches deleted, service worker unregistered (reload to start again)');
+      offlineStatus();
+    });
+  }
+
+  function startOffline() {
+    window.addEventListener('online', function () { log('browser online'); });
+    window.addEventListener('offline', function () { log('browser offline'); });
+    if (!swOn) {
+      log('Service worker or Cache API not available (needs HTTPS or localhost)', 'err');
+      offlineStatus();
+      return;
+    }
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      if (e.data && e.data.type === 'sw-log') log('sw: ' + e.data.msg, e.data.cls);
+    });
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      log('service worker now controls the page');
+      offlineStatus();
+    });
+    log(navigator.serviceWorker.controller ? 'page served under service worker' : 'page served without service worker');
+    navigator.serviceWorker.register('sw.js').then(function (reg) {
+      log('service worker registered (scope ' + reg.scope + ')');
+      return navigator.serviceWorker.ready;
+    }).then(function () {
+      saveOffline();   // automatic, like the real app: no download button needed
+    }).catch(function (e) { log('service worker registration failed: ' + e.message, 'err'); });
+    offlineStatus();
+  }
 
   // ---- UI ----
   tracks.forEach(function (tr, i) {
@@ -531,8 +628,8 @@
 
   $('prev').addEventListener('click', prev);
   $('next').addEventListener('click', next);
-  $('back10').addEventListener('click', function () { seekTo(audio.currentTime - 10); });
-  $('fwd10').addEventListener('click', function () { seekTo(audio.currentTime + 10); });
+  $('back5').addEventListener('click', function () { seekTo(audio.currentTime - 5); });
+  $('fwd5').addEventListener('click', function () { seekTo(audio.currentTime + 5); });
   $('speed').addEventListener('change', function () {
     rate = parseFloat(this.value);
     applyRate();
@@ -543,6 +640,8 @@
     log('continue to next song: ' + (continueToNext ? 'on' : 'off'));
   });
   $('stopLoop').addEventListener('click', function () { clearLoop(false); });
+  $('saveOffline').addEventListener('click', saveOffline);
+  $('removeOffline').addEventListener('click', removeOffline);
   $('mark').addEventListener('click', function () {
     log('{t: ' + audio.currentTime.toFixed(2) + '},', 'mark');
   });
@@ -571,8 +670,10 @@
     });
   }
 
-  log('page loaded; ' + tracks.length + ' tracks; continue to next song ' + (continueToNext ? 'on' : 'off') + '; ' + (window.isSecureContext ? 'secure context' : 'NOT a secure context'));
+  log('page loaded; ' + tracks.length + ' tracks; continue to next song ' + (continueToNext ? 'on' : 'off') + '; ' +
+    (window.isSecureContext ? 'secure context' : 'NOT a secure context') + '; ' + (navigator.onLine ? 'online' : 'offline'));
   loadTrack(0, false);
+  startOffline();
 })();
 </script>
 </body>

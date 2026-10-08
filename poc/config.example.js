@@ -12,9 +12,9 @@ window.CONFIG = {
     { src: "mock/artwork.png", sizes: "512x512", type: "image/png" }
   ],
 
-  // What happens when a track ends: false stops, true plays the next track
-  // (stopping after the last). Prev/Next always step between tracks.
-  continueToNext: false,
+  // What happens when a track ends: true (the default) plays the next track,
+  // stopping after the last; false stops. Prev/Next always step between tracks.
+  continueToNext: true,
 
   tracks: [
     { id: "test1", title: "Test 1", src: "audio/test1.mp3" }, // TODO: replace
