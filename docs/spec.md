@@ -168,7 +168,7 @@ The choice persists across launches and song changes. If the saved view is Measu
 The ribbon is the main screen once MusicXML exists, so it has to be large.
 
 - **Size.** A paper card about 300 dp tall (roughly a third of the screen):
-  - The **current line**, about 190 dp, shows **4–5 measures** of the tenor staff with lyrics under the notes.
+  - The **current line**, about 190 dp, shows the tenor staff with lyrics under the notes. Aim for 4–5 measures, but the renderer test (§17) fit only about 2–3 at a readable size on the first song, whose measures are dense with syllables. Readability wins over measure count (§20).
   - The **next line**, about 90 dp, below at `ink-faded`.
 - **Staff.** One tenor staff, in the clef the printed score uses for the tenor line (§13).
 - **Position.** The current measure gets an `accent-tint` fill. A 2 dp `accent` playhead marks the exact position. Measure numbers sit above the staff.
@@ -619,7 +619,25 @@ npx http-server app -p 8080 -c-1
 
 ### MusicXML renderer
 
-Test OpenSheetMusicDisplay (OSMD) and Verovio on the Pixel with the real tenor MusicXML before choosing. Check tenor-only rendering, the source clef shown unchanged (bass clef, with notes above the staff), access to measure positions for the ribbon, multi-measure rests, readability, and load time.
+**Recommendation: OpenSheetMusicDisplay (OSMD)**, pending Jordan's confirmation (§20). Tested on the Pixel 7 with the first song's tenor MusicXML (84 measures, 90 KB) using `poc/renderers.html`, with both renderers scaled to the same staff height:
+
+| | OSMD 2.2.0 | Verovio 6.3.0 |
+|---|---|---|
+| Download | 1.3 MB | 7.0 MB (WebAssembly) |
+| Library load + init | ~0.2 s | ~0.4 s + 0.1 s |
+| Parse + render, one-line ribbon | ~0.3 s | ~0.35 s |
+| Render, page view | ~0.1 s | ~0.3 s (incl. parse) |
+| JS memory | ~18 MB | ~29 MB |
+| Clef | Bass clef as written, ledger lines fine | Same |
+| Multi-measure rests | Merged automatically (m. 1–4 drawn as one "4" bar) | Each rest measure drawn separately |
+| Measure positions | From its layout API (`GraphicSheet.MeasureList`) | From the SVG (`g.measure`) plus `getElementAttr` for numbers |
+| Lyrics | Clean; a few dense measures crowd with tight spacing | Collide often ("Praisethe", "God'sho"), in the ribbon and on the page |
+| Density at a 30 px staff | ~2½ measures across a 412 dp screen with the compact preset and tighter spacing | ~3 measures, with colliding lyrics |
+| Extras to turn off | None | "Tenor" / "T." staff labels |
+| License | BSD-3-Clause | LGPL-3.0 |
+
+- OSMD needs its `compacttight` drawing preset and tighter spacing (`VoiceSpacingMultiplierVexflow` 0.55, `VoiceSpacingAddendVexflow` 2.0, `LyricsXPaddingFactorForLongLyrics` 0.5) to match Verovio's density. Its defaults fit only 1–2 measures across the phone.
+- Both rendered the tenor-only file correctly, and both kept the source clef. Both can hide other parts if a multi-part file ever arrives.
 
 ### Security and privacy
 
@@ -679,14 +697,15 @@ Launching offline without a song's audio saved shows "This song isn't available 
 
 1. **Ribbon motion** (§6): line paging or continuous? Decide on the phone.
 2. **Colors** (§3): decide on the phone.
-3. **MusicXML renderer** (§17): OSMD or Verovio, after the phone test.
-4. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
+3. **MusicXML renderer** (§17): the phone test recommends OSMD. Confirm.
+4. **Ribbon density** (§6): at a readable size the first song fits about 2–3 measures across the phone, not 4–5. Accept fewer measures, or shrink the staff? With so few measures on screen, line paging would turn the page every few seconds, which favors continuous motion.
+5. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
 
 ---
 
 ## 21. Implementation phases
 
-1. **Device proof (nearly done).** The PoC covers background playback, media controls, metadata, artwork, loop wrapping, offline playback with seeking, and all of it as an installed app on the Pixel. Remaining: the renderer comparison.
+1. **Device proof (done).** The PoC covers background playback, media controls, metadata, artwork, loop wrapping, offline playback with seeking, all of it as an installed app, and the MusicXML renderer comparison on the Pixel.
 2. **Clickable prototype.** A single HTML file on a simulated clock with the placeholder data: all views, sheets, both ribbon motions, the rest countdown, loops, and the 360 dp chip row. Use it to choose colors and ribbon motion.
 3. **Playback and timing core.** Real audio, the playback module, `timing.js` and `loops.js` with unit tests, settings persistence, song switching and Repeat. One song works end to end online.
 4. **Page-image content.** Section crops, Whole Score, validation, Settings, lyrics size and error states. All four songs usable.
