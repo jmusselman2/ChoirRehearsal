@@ -37,16 +37,20 @@ It's hosted at `jordanmusselman.com/rehearsal/`.
 - **Static lock-screen metadata.** Title, artist ("Tenor rehearsal"), album and artwork are set once per track.
 - **Offline is automatic.** All four songs are saved after the first load; there's no download button.
 - **No Car Mode.** Lock-screen controls cover eyes-free listening, and the Lyrics view covers a quick glance.
+- **Landscape by default.** Force landscape starts on. It can be disabled in Settings to
+  follow the phone orientation; if a browser denies the runtime lock, the music remains visible.
+- **Scores are MusicXML**, rendered with OpenSheetMusicDisplay. The measure ribbon scrolls continuously
+  under a fixed playhead, about 3 measures at a time.
 - **Plain HTML and JavaScript.** No build step and no framework.
 
 ## Repo layout
 
-| Path                         | What it is                                                                     |
-| ---------------------------- | ------------------------------------------------------------------------------ |
-| [docs/spec.md](docs/spec.md) | The spec: screens, behavior, timing model, data, offline, phases, tests        |
-| [poc/](poc/README.md)        | Throwaway proof of concept: background playback, lock screen, loops, offline  |
-| `app/` (planned)             | The real app. Everything under it uploads as-is to `/rehearsal/`              |
-| `app/content/`               | Real songs, scores and lyrics. Gitignored, because they're copyrighted        |
+| Path                         | What it is                                                                   |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| [docs/spec.md](docs/spec.md) | The spec: screens, behavior, timing model, data, offline, phases, tests      |
+| [poc/](poc/README.md)        | Throwaway proof of concept: background playback, lock screen, loops, offline |
+| `app/` (planned)             | The real app. Everything under it uploads as-is to `/rehearsal/`             |
+| `app/content/`               | Real songs, scores and lyrics. Gitignored, because they're copyrighted       |
 
 ## Status
 

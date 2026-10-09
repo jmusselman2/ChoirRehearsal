@@ -16,17 +16,13 @@ Everything the page needs at runtime is inside `poc/`, so its contents upload as
 | `smoke.html`                    | Checkpoint 1: just `<audio controls>` on test1             | yes                 |
 | `sw.js`                         | Service worker: offline page and MP3s, with seeking        | yes                 |
 | `manifest.webmanifest`          | Makes the page installable as an app                       | yes                 |
-| `renderers.html`                | MusicXML renderer comparison: OSMD vs Verovio              | yes                 |
-| `fetch-renderers.ps1`           | Downloads the two renderers into `poc/vendor/`             | yes                 |
-| `vendor/`                       | The downloaded renderers                                   | **no** (gitignored) |
 | `config.example.js`             | Mock `CONFIG` (titles, loops, lyrics, score sections)      | yes                 |
 | `config.js`                     | Your live `CONFIG`, copied from the example                | **no** (gitignored) |
 | `mock/score-placeholder.svg`    | Fake score page with 5 empty systems                       | yes                 |
 | `mock/artwork.png`              | 512×512 lock-screen artwork and app icon                   | yes                 |
 | `mock/icon-192.png`             | 192×192 app icon                                           | yes                 |
-| `score/`                        | Real score images and MusicXML                             | **no** (gitignored) |
-| `audio/test1.mp3` … `test4.mp3` | Copies of the repo-root `audio/` files                     | **no** (gitignored) |
-| `sync-media.ps1`                | Copies the MP3s into `poc/audio/`                          | yes                 |
+| `score/`                        | Real score images, if you add them (see below)             | **no** (gitignored) |
+| `audio/test1.mp3` … `test4.mp3` | Copies of the `app/content/audio/` files                   | **no** (gitignored) |
 | `.htaccess`                     | `no-cache` and MIME types (`.mp3`, `.svg`, `.webmanifest`) | yes                 |
 
 ## Run locally
@@ -34,7 +30,6 @@ Everything the page needs at runtime is inside `poc/`, so its contents upload as
 From the repo root in PowerShell:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File poc\sync-media.ps1
 if (-not (Test-Path poc\config.js)) { Copy-Item poc\config.example.js poc\config.js }
 npx http-server poc -p 8080 -c-1
 ```
@@ -62,34 +57,16 @@ and the saved MP3s. The page, config and images are fetched network-first, so ed
 up while the server is running. Changed MP3s don't: they're served from the saved copy.
 Tap **Remove offline copy** (then reload) to start clean.
 
-## Renderer comparison
-
-`renderers.html` renders a tenor MusicXML file with OpenSheetMusicDisplay or Verovio, as a one-line
-ribbon (with a measure highlight that steps along) and as a page wrapped to screen width.
-It logs load, parse and render times, measure positions, staff height and how many whole measures fit.
-
-```powershell
-powershell -ExecutionPolicy Bypass -File poc\fetch-renderers.ps1
-Copy-Item app\content\score\<song>.musicxml poc\score\song.musicxml
-```
-
-Then open `http://localhost:8080/renderers.html?r=osmd` or `?r=verovio`. Options:
-
-- `staff=30`: staff height in CSS px that both renderers are scaled to (default 44).
-- `tight=1`: OSMD's compact preset plus tighter note and lyric spacing.
-- `src=score/other.musicxml`: a different file.
-
-Results from the Pixel 7 are in the spec, §17.
-
 ## Updating the audio
 
-Rerun the sync script whenever the files in the repo-root `audio/` change:
+When the files in `app/content/audio/` change, copy them into `poc/audio/` as `test1.mp3` … `test4.mp3`, in catalog order. From the repo root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File poc\sync-media.ps1
+$songs = 'alleluia-tenor', 'eternal-home-tenor', 'god-rest-tenor', 'while-shepherds-tenor2'
+New-Item -ItemType Directory -Force poc\audio | Out-Null
+foreach ($i in 0..3) { Copy-Item "app\content\audio\$($songs[$i]).mp3" "poc\audio\test$($i + 1).mp3" }
 ```
 
-It copies `audio/test1.mp3` … `test4.mp3` into `poc/audio/`.
 There's no re-encode: the originals are already 192 kbps CBR.
 
 ## Replacing the mocks
@@ -154,7 +131,7 @@ audio/test4.mp3
 score/…            (only once you have a real score image)
 ```
 
-`config.example.js`, `sync-media.ps1` and this README aren't needed on the server.
+`config.example.js` and this README aren't needed on the server.
 Uploading them is harmless.
 
 `.htaccess` is a dotfile, so File Manager hides it by default.

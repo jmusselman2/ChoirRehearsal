@@ -1,6 +1,5 @@
-/audio/
 /poc/audio/
 /poc/score/
 /poc/config.js
 /app/content/
-/poc/vendor/
+/.claude/settings.local.json
