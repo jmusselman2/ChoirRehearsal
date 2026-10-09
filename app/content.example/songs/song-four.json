@@ -1,0 +1,28 @@
+{
+  "id": "song-four",
+  "title": "Song Four",
+  "durationSeconds": 212,
+  "measures": { "first": 1, "last": 60 },
+  "audio": "audio/song-four-tenor2.mp3",
+  "score": { "format": "musicxml", "src": "score/song-four-tenor2.musicxml", "partId": "P1", "line": "Tenor 2" },
+  "sections": [
+    { "id": "intro", "label": "Intro", "from": 1, "to": 4 },
+    { "id": "verse-1", "label": "Verse 1", "from": 5, "to": 20 },
+    { "id": "verse-2", "label": "Verse 2", "from": 21, "to": 36 },
+    { "id": "interlude", "label": "Interlude", "from": 37, "to": 40 },
+    { "id": "verse-3", "label": "Verse 3", "from": 41, "to": 56 },
+    { "id": "amen", "label": "Amen", "from": 57, "to": 60 }
+  ],
+  "timing": { "interpolation": "uniform", "anchors": [] },
+  "rests": [{ "from": 1, "to": 4, "entrance": 5 }, { "from": 37, "to": 40, "entrance": 41 }],
+  "lyrics": [
+    { "id": "v1-1", "section": "verse-1", "from": 5, "to": 12, "text": "Quiet now the snow is falling, covering the sleeping town," },
+    { "id": "v1-2", "section": "verse-1", "from": 13, "to": 20, "text": "every roof and every steeple wearing white and settling down." },
+    { "id": "v2-1", "section": "verse-2", "from": 21, "to": 28, "text": "Footsteps fade along the laneway, candles flicker one by one," },
+    { "id": "v2-2", "section": "verse-2", "from": 29, "to": 36, "text": "till the night is still and quiet and the long day's work is done." },
+    { "id": "v3-1", "section": "verse-3", "from": 41, "to": 48, "text": "Quiet now the bells are ringing, calling every traveler in," },
+    { "id": "v3-2", "section": "verse-3", "from": 49, "to": 56, "text": "warm the hearth and wide the doorway, let the evening song begin." },
+    { "id": "am-1", "section": "amen", "from": 57, "to": 60, "text": "Amen, amen." }
+  ],
+  "loops": []
+}

@@ -1,0 +1,11 @@
+# Choir Rehearsal (spec §17): no-cache for code and data, and MIME types the host may lack.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|json|webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+AddType audio/mpeg .mp3
+AddType application/manifest+json .webmanifest
+AddType application/vnd.recordare.musicxml+xml .musicxml
+AddType image/webp .webp
+AddType text/javascript .js

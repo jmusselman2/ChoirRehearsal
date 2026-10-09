@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="4.0">
+  <work><work-title>Song Three</work-title></work>
+  <identification>
+    <rights>Original placeholder material for the Choir Rehearsal sample songs.</rights>
+    <encoding><software>tools/generate-sample-content.mjs</software></encoding>
+  </identification>
+  <part-list>
+    <score-part id="P1"><part-name>Tenor</part-name></score-part>
+  </part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes><divisions>2</divisions><key><fifths>2</fifths><mode>major</mode></key><time><beats>4</beats><beat-type>4</beat-type></time><clef><sign>G</sign><line>2</line><clef-octave-change>-1</clef-octave-change></clef></attributes>
+      <direction placement="above"><direction-type><metronome><beat-unit>quarter</beat-unit><per-minute>72</per-minute></metronome></direction-type><sound tempo="72"/></direction>
+      <note><rest measure="yes"/><duration>8</duration><voice>1</voice></note>
+    </measure>
+    <measure number="2">
+      <note><rest measure="yes"/><duration>8</duration><voice>1</voice></note>
+    </measure>
+    <measure number="3">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>Lan</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>terns</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="4">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>hang</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>a</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="5">
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>long</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="6">
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>har</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>bor,</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="7">
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>bob</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>bing</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="8">
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>in</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="9">
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>eve</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>ning</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="10">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>3</duration><voice>1</voice><type>quarter</type><dot/><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>tide,</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>half</type><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="11">
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>and</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="12">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>boats</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>come</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="13">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>home</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>to</text></lyric></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="14">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>shel</text></lyric></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>ter</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="15">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>where</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="16">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>qui</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>et</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="17">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>wa</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>ters</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="18">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>2</duration><voice>1</voice><type>quarter</type><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>hide.</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>2</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>half</type><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="19">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>Some</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>one</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>sings</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="20">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>a</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>cross</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="21">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>wa</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="22">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>ter,</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>some</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="23">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>one</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>an</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="24">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>swers</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>from</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="25">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>3</duration><voice>1</voice><type>quarter</type><dot/><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>shore,</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>half</type><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="26">
+      <note><rest measure="yes"/><duration>8</duration><voice>1</voice></note>
+    </measure>
+    <measure number="27">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>and</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="28">
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>tune</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>goes</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="29">
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>on</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>and</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="30">
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>on,</text></lyric></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>a</text></lyric></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="31">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>lit</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>tle</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="32">
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>sweet</text></lyric></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>er</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="33">
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>than</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>be</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="34">
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>3</duration><voice>1</voice><type>quarter</type><dot/><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>fore.</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>half</type><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="35">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>Lan</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>terns</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="36">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>hang</text></lyric></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>a</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="37">
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>long</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="38">
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>har</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>bor,</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="39">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>light</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>ing</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="40">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>ev</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>middle</syllabic><text>ery</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="41">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>one</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>their</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="42">
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>2</duration><voice>1</voice><type>quarter</type><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>way,</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>4</duration><voice>1</voice><type>half</type><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="43">
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>home</text></lyric></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>a</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="44">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>gain,</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>home</text></lyric></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="45">
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>a</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>gain,</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="46">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>at</text></lyric></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="47">
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>begin</syllabic><text>clos</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>end</syllabic><text>ing</text></lyric></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="48">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>of</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="49">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>the</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">begin</beam></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice><type>eighth</type><beam number="1">end</beam><notations><slur type="stop" number="1"/></notations></note>
+    </measure>
+    <measure number="50">
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>half</type><notations><slur type="start" number="1"/></notations><lyric number="1"><syllabic>single</syllabic><text>day.</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><voice>1</voice><type>quarter</type></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>2</duration><voice>1</voice><type>quarter</type><notations><slur type="stop" number="1"/></notations></note>
+      <barline location="right"><bar-style>light-heavy</bar-style></barline>
+    </measure>
+  </part>
+</score-partwise>

@@ -1,0 +1,41 @@
+{
+  "id": "song-two",
+  "title": "Song Two",
+  "durationSeconds": 185,
+  "measures": { "first": 0, "last": 70 },
+  "audio": "audio/song-two-tenor.mp3",
+  "score": { "format": "musicxml", "src": "score/song-two-tenor.musicxml", "partId": "P1" },
+  "sections": [
+    { "id": "verse-1", "label": "Verse 1", "from": 0, "to": 16 },
+    { "id": "refrain-1", "label": "Refrain", "from": 17, "to": 28 },
+    { "id": "interlude", "label": "Interlude", "from": 29, "to": 34 },
+    { "id": "verse-2", "label": "Verse 2", "from": 35, "to": 50 },
+    { "id": "refrain-2", "label": "Refrain 2", "from": 51, "to": 62 },
+    { "id": "coda", "label": "Coda", "from": 63, "to": 70 }
+  ],
+  "timing": {
+    "interpolation": "notated-beats",
+    "anchors": [
+      { "measure": 0, "time": 0.5, "source": "section" },
+      { "measure": 17, "time": 46.93, "source": "section" },
+      { "measure": 29, "time": 72.64, "source": "section" },
+      { "measure": 35, "time": 89.79, "source": "section" },
+      { "measure": 51, "time": 135.5, "source": "section" },
+      { "measure": 63, "time": 161.21, "source": "section" },
+      { "measure": 71, "time": 185, "source": "terminal" }
+    ]
+  },
+  "rests": [{ "from": 29, "to": 34, "entrance": 35 }, { "from": 69, "to": 70 }],
+  "lyrics": [
+    { "id": "v1-1", "section": "verse-1", "from": 0, "to": 8, "text": "Oh, the hills are waking slowly, and the valley hums along," },
+    { "id": "v1-2", "section": "verse-1", "from": 9, "to": 16, "text": "every window lit and open to the quiet morning song." },
+    { "id": "r1-1", "section": "refrain-1", "from": 17, "to": 22, "text": "Sing aloud, sing aloud," },
+    { "id": "r1-2", "section": "refrain-1", "from": 23, "to": 28, "text": "let the morning carry the sound." },
+    { "id": "v2-1", "section": "verse-2", "from": 35, "to": 42, "text": "Now the river turns to silver, and the swallows circle high," },
+    { "id": "v2-2", "section": "verse-2", "from": 43, "to": 50, "text": "every shadow shorter, lighter, as the noonday hours go by." },
+    { "id": "r2-1", "section": "refrain-2", "from": 51, "to": 56, "text": "Sing aloud, sing aloud," },
+    { "id": "r2-2", "section": "refrain-2", "from": 57, "to": 62, "text": "let the evening carry the sound." },
+    { "id": "co-1", "section": "coda", "from": 63, "to": 68, "text": "Carry the sound away." }
+  ],
+  "loops": []
+}

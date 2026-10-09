@@ -1,0 +1,50 @@
+{
+  "id": "song-one",
+  "title": "Song One",
+  "durationSeconds": 258,
+  "measures": { "first": 1, "last": 88 },
+  "audio": "audio/song-one-tenor.mp3",
+  "score": { "format": "musicxml", "src": "score/song-one-tenor.musicxml", "partId": "P1" },
+  "sections": [
+    { "id": "intro", "label": "Intro", "from": 1, "to": 8 },
+    { "id": "verse-1", "label": "Verse 1", "from": 9, "to": 24 },
+    { "id": "verse-2", "label": "Verse 2", "from": 25, "to": 40 },
+    { "id": "chorus", "label": "Chorus", "from": 41, "to": 48 },
+    { "id": "interlude", "label": "Interlude", "from": 49, "to": 56 },
+    { "id": "bridge", "label": "Bridge", "from": 57, "to": 72 },
+    { "id": "final-chorus", "label": "Final chorus", "from": 73, "to": 84 },
+    { "id": "ending", "label": "Ending", "from": 85, "to": 88 }
+  ],
+  "timing": {
+    "interpolation": "uniform",
+    "anchors": [
+      { "measure": 1, "time": 0, "source": "section" },
+      { "measure": 9, "time": 22.86, "source": "section" },
+      { "measure": 25, "time": 68.57, "source": "section" },
+      { "measure": 41, "time": 114.29, "source": "section" },
+      { "measure": 49, "time": 137.14, "source": "section" },
+      { "measure": 57, "time": 160, "source": "measure" },
+      { "measure": 73, "time": 205.71, "source": "section" },
+      { "measure": 85, "time": 240, "source": "section" },
+      { "measure": 87, "time": 247.5, "source": "measure" },
+      { "measure": 89, "time": 258, "source": "terminal" }
+    ]
+  },
+  "rests": [{ "from": 1, "to": 8, "entrance": 9 }, { "from": 49, "to": 56, "entrance": 57 }],
+  "lyrics": [
+    { "id": "v1-1", "section": "verse-1", "from": 9, "to": 16, "text": "Morning comes across the river," },
+    { "id": "v1-2", "section": "verse-1", "from": 17, "to": 24, "text": "every lantern burning low." },
+    { "id": "v2-1", "section": "verse-2", "from": 25, "to": 32, "text": "Evening falls along the meadow," },
+    { "id": "v2-2", "section": "verse-2", "from": 33, "to": 40, "text": "every field is turning gold." },
+    { "id": "ch-1", "section": "chorus", "from": 41, "to": 44, "text": "Carry me home, carry me home," },
+    { "id": "ch-2", "section": "chorus", "from": 45, "to": 48, "text": "over the hill where the tall grass grows." },
+    { "id": "br-1", "section": "bridge", "from": 57, "to": 64, "text": "Long is the road," },
+    { "id": "br-2", "section": "bridge", "from": 65, "to": 72, "text": "but the light remains." },
+    { "id": "fc-1", "section": "final-chorus", "from": 73, "to": 84, "text": "Carry me home, carry me home." },
+    { "id": "end-1", "section": "ending", "from": 85, "to": 88, "text": "Home." }
+  ],
+  "loops": [
+    { "id": "bridge-entrance", "name": "Bridge entrance", "from": 55, "to": 60, "note": "Count the rest, come in clean on 57." },
+    { "id": "final-hold", "name": "Final hold", "from": 83, "to": 88, "note": "Hold through the fermata, watch the cutoff." }
+  ]
+}

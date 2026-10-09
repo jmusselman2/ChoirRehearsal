@@ -1,0 +1,34 @@
+{
+  "id": "song-three",
+  "title": "Song Three",
+  "durationSeconds": 167,
+  "measures": { "first": 1, "last": 50 },
+  "audio": "audio/song-three-tenor.mp3",
+  "score": { "format": "musicxml", "src": "score/song-three-tenor.musicxml", "partId": "P1" },
+  "sections": [
+    { "id": "intro", "label": "Intro", "from": 1, "to": 2 },
+    { "id": "verse-1", "label": "Verse 1", "from": 3, "to": 18 },
+    { "id": "verse-2", "label": "Verse 2", "from": 19, "to": 34 },
+    { "id": "final-verse", "label": "Final verse", "from": 35, "to": 50 }
+  ],
+  "timing": {
+    "interpolation": "uniform",
+    "anchors": [
+      { "measure": 1, "time": 0, "source": "section" },
+      { "measure": 3, "time": 6.67, "source": "section" },
+      { "measure": 19, "time": 60, "source": "section" },
+      { "measure": 35, "time": 113.33, "source": "section" },
+      { "measure": 51, "time": 167, "source": "terminal" }
+    ]
+  },
+  "rests": [{ "from": 1, "to": 2, "entrance": 3 }, { "from": 26, "to": 26, "entrance": 27 }],
+  "lyrics": [
+    { "id": "v1-1", "section": "verse-1", "from": 3, "to": 10, "text": "Lanterns hang along the harbor, bobbing in the evening tide," },
+    { "id": "v1-2", "section": "verse-1", "from": 11, "to": 18, "text": "and the boats come home to shelter where the quiet waters hide." },
+    { "id": "v2-1", "section": "verse-2", "from": 19, "to": 25, "text": "Someone sings across the water, someone answers from the shore," },
+    { "id": "v2-2", "section": "verse-2", "from": 27, "to": 34, "text": "and the tune goes on and on, a little sweeter than before." },
+    { "id": "fv-1", "section": "final-verse", "from": 35, "to": 42, "text": "Lanterns hang along the harbor, lighting everyone their way," },
+    { "id": "fv-2", "section": "final-verse", "from": 43, "to": 50, "text": "home again, home again, at the closing of the day." }
+  ],
+  "loops": []
+}

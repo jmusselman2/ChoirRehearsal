@@ -1,0 +1,10 @@
+{
+  "catalogRevision": "sample-2026-10-09.1",
+  "album": "Tenor Choir · Fall 2026",
+  "songs": [
+    { "id": "song-one", "src": "songs/song-one.json" },
+    { "id": "song-two", "src": "songs/song-two.json" },
+    { "id": "song-three", "src": "songs/song-three.json" },
+    { "id": "song-four", "src": "songs/song-four.json" }
+  ]
+}
