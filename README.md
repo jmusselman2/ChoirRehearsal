@@ -91,6 +91,18 @@ as the player (`app/content/`, or the samples on a 404).
 Work in progress is saved in the browser per song until you discard it. The tool never writes
 files itself.
 
+## Offline and updates
+
+After the first visit the player saves every song automatically (Settings shows
+`Saving for offline… 2 of 4`, then `✓ Available offline · 4 songs`) and the service worker
+(`app/sw.js`) serves it from the next launch, including seeking in saved audio.
+
+- Bump `APP_VERSION` in `app/sw.js` whenever code changes, so phones fetch the new app files.
+- Bump `catalogRevision` in `app/content/catalog.json` whenever content changes. Phones download
+  the new revision in the background and switch to it on their next launch, never mid-song.
+- On `localhost` the worker fetches app files network-first, so edits show up on reload. To start
+  completely fresh, clear the site's data in the browser.
+
 ## Tests
 
 ```powershell
@@ -121,4 +133,7 @@ The output is deterministic. `--no-audio` rebuilds only the JSON and MusicXML.
 3. **Player:** the production shell, sample content, playback/timing/settings core and the score,
    lyrics, measure and whole-score views are built (finishing guide steps 3–5).
 4. **Setup page:** marking, nudges, per-measure passes, rest and phrase proposals, loops,
-   validation and JSON export (step 6). Offline support and real-content timing are next.
+   validation and JSON export (step 6).
+5. **Offline and install:** service worker, per-revision content caches, cached Range requests and
+   the Settings status line (step 8). Next: timing the real songs on the setup page, then
+   device QA and deployment.

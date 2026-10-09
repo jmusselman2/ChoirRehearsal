@@ -8,6 +8,7 @@ import { createPlayer, SKIP_SECONDS } from './playback.js';
 import { createOrientation } from './orientation.js';
 import { createWakeLock } from './wake-lock.js';
 import { createLayers } from './ui/layers.js';
+import { createOffline } from './offline.js';
 import { readMeasureBeats } from './score/measures.js';
 import { fetchScoreXml } from './score/osmd.js';
 import { formatTime, formatSpeed, formatRange, VIEW_LABELS, h } from './format.js';
@@ -32,6 +33,7 @@ const orientation = createOrientation({ screen: window.screen, document, matchMe
 if (settings.forceLandscape) orientation.apply(true);
 const wake = createWakeLock({ navigator, document });
 const layers = createLayers();
+const offline = createOffline({ onStatus: (text) => { $('offlineStatus').textContent = text; } });
 
 // ---- Views ------------------------------------------------------------------------------------
 
@@ -130,6 +132,8 @@ let catalogEntries = [];
 
 async function boot() {
   showStatus('Loading…');
+  // Switch to a newer saved revision only now, before anything plays (spec §19).
+  await offline.launch();
   let content;
   try {
     content = await loadCatalog((url, init) => fetch(url, init));
@@ -163,6 +167,8 @@ async function boot() {
   // Every launch: the last song, at 0:00, paused, with no loop running (spec §2, §11).
   const launch = launchState(settings, songs.map((c) => c.id));
   player.load(launch.songIndex);
+  // Save every song for offline use in the background; no download button (spec §19).
+  offline.register().then(() => offline.sync());
 }
 
 async function retrySong(index) {
@@ -197,9 +203,9 @@ function hideStatus() {
 
 const viewElementId = (key) => ({ score: 'viewScore', lyrics: 'viewLyrics', 'score-lyrics': 'viewScoreLyrics', measure: 'viewMeasure' }[key]);
 
-const audioAlert = h('div', { class: 'notice', role: 'alert', hidden: true },
-  h('span', { text: "This song's audio couldn't load. " }),
-  h('button', { type: 'button', class: 'pill-btn', text: 'Retry', onclick: () => player && player.retry() }));
+const audioAlertText = h('span', { text: "This song's audio couldn't load. " });
+const audioAlertRetry = h('button', { type: 'button', class: 'pill-btn', text: 'Retry', onclick: () => player && player.retry() });
+const audioAlert = h('div', { class: 'notice', role: 'alert', hidden: true }, audioAlertText, audioAlertRetry);
 $('content').prepend(audioAlert);
 
 // ---- Views and the view mode ------------------------------------------------------------------
@@ -347,11 +353,14 @@ function updateChrome() {
   $('lyricsSmaller').hidden = !lyricsMode;
   $('lyricsLarger').hidden = !lyricsMode;
   document.documentElement.style.setProperty('--lyrics-size', `${settings.lyricsSize}px`);
-  const playable = !!(ctx && ctx.status === 'ok' && player && !player.error);
+  const playable = !!(ctx && ctx.status === 'ok' && player && !player.error && !ctx.offlineMissing);
   $('playBtn').disabled = !playable;
   $('wholePlay').disabled = !playable;
   $('scrubInput').disabled = !playable;
-  audioAlert.hidden = !(ctx && ctx.status === 'ok' && player && player.error === 'audio');
+  const offlineMissing = !!(ctx && ctx.status === 'ok' && ctx.offlineMissing);
+  audioAlertText.textContent = offlineMissing ? "This song isn't available offline yet." : "This song's audio couldn't load. ";
+  audioAlertRetry.hidden = offlineMissing;
+  audioAlert.hidden = !(ctx && ctx.status === 'ok' && player && (player.error === 'audio' || offlineMissing));
   loopUiKey = '';
 }
 
@@ -366,7 +375,7 @@ function onChange(reason) {
       wake.update(settings.keepScreenOn, !audio.paused);
       requestRender();
       break;
-    case 'error': updateChrome(); requestRender(); break;
+    case 'error': checkOfflineAvailability(currentCtx()); updateChrome(); requestRender(); break;
     case 'loop':
       loopUiKey = '';
       requestRender();
@@ -377,6 +386,7 @@ function onChange(reason) {
 
 function onTrack() {
   const ctx = currentCtx();
+  checkOfflineAvailability(ctx);
   settings.lastSongId = ctx.id;
   persist();
   for (const view of Object.values(views)) view.setSong(ctx);
@@ -388,6 +398,19 @@ function onTrack() {
   if (layers.current === 'loops') buildLoopRows($('loopSheetList'));
   if (layers.current === 'settings') buildLoopRows($('settingsLoopList'));
 }
+
+// Offline with this song's audio not saved: say so and disable Play for this song only (spec §19).
+async function checkOfflineAvailability(ctx) {
+  if (!ctx || ctx.status !== 'ok') return;
+  const missing = !navigator.onLine && !(await offline.isSaved(ctx.audioUrl));
+  if (missing !== !!ctx.offlineMissing) {
+    ctx.offlineMissing = missing;
+    if (missing) player.pause();
+    updateChrome();
+  }
+}
+window.addEventListener('online', () => { const ctx = currentCtx(); if (ctx) { ctx.offlineMissing = false; updateChrome(); } });
+window.addEventListener('offline', () => checkOfflineAvailability(currentCtx()));
 
 function onMetadata() {
   const ctx = currentCtx();
