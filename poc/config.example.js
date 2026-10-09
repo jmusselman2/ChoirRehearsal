@@ -16,6 +16,9 @@ window.CONFIG = {
   // stopping after the last; false stops. Prev/Next always step between tracks.
   continueToNext: true,
 
+  // Keep the screen on while playing (Screen Wake Lock). Default true.
+  keepScreenOn: true,
+
   tracks: [
     { id: "test1", title: "Test 1", src: "audio/test1.mp3" }, // TODO: replace
     { id: "test2", title: "Test 2", src: "audio/test2.mp3" }, // TODO: replace

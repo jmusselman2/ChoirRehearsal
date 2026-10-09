@@ -121,9 +121,12 @@ Edit `config.js`, not the example, because real lyrics must stay out of the publ
 `false` stops.
 The **Continue to next song** checkbox starts from this value and can be flipped while testing.
 
-`album`, `artwork`, `continueToNext` and `loops` are all optional.
+`keepScreenOn` (default `true`) keeps the screen awake while audio plays and the page is visible.
+The **Keep screen on while playing** checkbox starts from this value.
+
+`album`, `artwork`, `continueToNext`, `keepScreenOn` and `loops` are all optional.
 An older `config.js` without them still works: no loops, the default album and artwork,
-and continue-to-next on.
+and continue-to-next and keep-screen-on both on.
 
 If `config.js` is missing or broken, the page shows a red banner and the event log says why.
 A missing MP3 or score image shows up as an error line in the log.
@@ -197,6 +200,8 @@ Fix that first.
   - Log lines starting `sw:` come from the service worker.
     `audio from cache: test1.mp3 bytes=N- → 206 …` means a seek was answered from the saved file;
     `audio from network` means it wasn't saved yet.
+  - On the very first visit the page keeps streaming from the network; the service worker serves it
+    from the next load. (Taking over mid-session broke the audio stream, so `sw.js` doesn't.)
   - To test offline, stop the server (or remove the USB port forward), then reload.
     The page should load, play, seek, loop and switch tracks with every audio line
     reading `from cache`.
@@ -208,3 +213,7 @@ Fix that first.
   - Chrome granted persistent storage to the installed app but not to the browser tab,
     so the saved songs are safer from eviction there.
   - Uninstall it like any other app when you're done.
+- **Speed** runs from 0.5× to 1.5×, with pitch preserved.
+- **Keep screen on while playing** holds a Screen Wake Lock while audio plays and the page is visible.
+  The log shows `screen wake lock on` / `released`. Chrome drops the lock when the screen goes off
+  or the page is hidden, and the page takes it again when it's visible.

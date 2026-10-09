@@ -55,13 +55,16 @@
   <button id="next" type="button">Next</button>
   <label>Speed
     <select id="speed">
+      <option value="0.5">0.5&times;</option>
       <option value="0.75">0.75&times;</option>
       <option value="0.85">0.85&times;</option>
       <option value="1" selected>1.0&times;</option>
       <option value="1.1">1.1&times;</option>
+      <option value="1.5">1.5&times;</option>
     </select>
   </label>
   <label><input id="continueNext" type="checkbox"> Continue to next song</label>
+  <label><input id="keepScreenOn" type="checkbox"> Keep screen on while playing</label>
 </div>
 
 <div id="loops" class="row"></div>
@@ -168,6 +171,8 @@
   var idx = 0;
   var rate = 1;
   var continueToNext = CONFIG.continueToNext !== false;   // on unless config turns it off
+  var keepScreenOn = CONFIG.keepScreenOn !== false;       // on unless config turns it off
+  var wakeLock = null, wakePending = false;
   var activeLoop = null;     // CONFIG.loops entry currently looping, if any
   var loopA = null, loopB = null;
   var lastT = 0;            // currentTime at the previous timeupdate (reset on seeked)
@@ -225,6 +230,27 @@
     } catch (e) {
       log('setActionHandler(' + name + ') not supported: ' + e.message, 'err');
     }
+  }
+
+  // ---- Keep screen on: Screen Wake Lock while playing and visible ----
+  // The browser drops the lock whenever the page is hidden, so it's re-requested on return.
+  function requestWake() {
+    if (!keepScreenOn || wakeLock || wakePending || audio.paused || document.visibilityState !== 'visible') return;
+    if (!('wakeLock' in navigator)) { log('Screen Wake Lock API not available', 'err'); return; }
+    wakePending = true;
+    navigator.wakeLock.request('screen').then(function (wl) {
+      wakePending = false;
+      wakeLock = wl;
+      log('screen wake lock on');
+      wl.addEventListener('release', function () { wakeLock = null; log('screen wake lock released'); });
+    }, function (e) {
+      wakePending = false;
+      log('screen wake lock refused: ' + e.name + ': ' + e.message, 'err');
+    });
+  }
+
+  function releaseWake() {
+    if (wakeLock) wakeLock.release();
   }
 
   // ---- Playback helpers ----
@@ -497,9 +523,9 @@
     updatePositionState('ratechange');
   });
 
-  audio.addEventListener('play', function () { log('play'); if (ms) ms.playbackState = 'playing'; });
+  audio.addEventListener('play', function () { log('play'); if (ms) ms.playbackState = 'playing'; requestWake(); });
   audio.addEventListener('playing', function () { log('playing'); });
-  audio.addEventListener('pause', function () { log('pause'); if (ms) ms.playbackState = 'paused'; });
+  audio.addEventListener('pause', function () { log('pause'); if (ms) ms.playbackState = 'paused'; releaseWake(); });
   audio.addEventListener('waiting', function () { log('waiting', 'wrap'); });
   audio.addEventListener('stalled', function () { log('stalled', 'wrap'); });
 
@@ -513,6 +539,7 @@
 
   document.addEventListener('visibilitychange', function () {
     log('visibilitychange: ' + document.visibilityState);
+    if (document.visibilityState === 'visible') requestWake();
   });
 
   // ---- Media Session handlers ----
@@ -635,6 +662,12 @@
   $('speed').addEventListener('change', function () {
     rate = parseFloat(this.value);
     applyRate();
+  });
+  $('keepScreenOn').checked = keepScreenOn;
+  $('keepScreenOn').addEventListener('change', function () {
+    keepScreenOn = this.checked;
+    log('keep screen on: ' + (keepScreenOn ? 'on' : 'off'));
+    if (keepScreenOn) requestWake(); else releaseWake();
   });
   $('continueNext').checked = continueToNext;
   $('continueNext').addEventListener('change', function () {

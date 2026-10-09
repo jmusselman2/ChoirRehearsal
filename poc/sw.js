@@ -30,7 +30,10 @@ self.addEventListener('activate', function (event) {
   event.waitUntil(caches.keys().then(function (keys) {
     return Promise.all(keys.filter(function (k) { return k !== SHELL_CACHE && k !== AUDIO_CACHE; })
       .map(function (k) { return caches.delete(k); }));
-  }).then(function () { return self.clients.claim(); }));
+  }));
+  // No clients.claim(): an open page keeps streaming audio from the network until it's reloaded.
+  // Taking over mid-session makes the audio element's next Range request come from the cache,
+  // and Chrome fails the stream with a "data source error" when its source changes partway.
 });
 
 self.addEventListener('fetch', function (event) {

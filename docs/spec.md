@@ -168,7 +168,7 @@ The choice persists across launches and song changes. If the saved view is Measu
 The ribbon is the main screen once MusicXML exists, so it has to be large.
 
 - **Size.** A paper card about 300 dp tall (roughly a third of the screen):
-  - The **current line**, about 190 dp, shows the tenor staff with lyrics under the notes. Aim for 4–5 measures, but the renderer test (§17) fit only about 2–3 at a readable size on the first song, whose measures are dense with syllables. Readability wins over measure count (§20).
+  - The **current line**, about 190 dp, shows **about 3 measures** of the tenor staff with lyrics under the notes, at a readable size. (The renderer test, §17, showed the first song's syllable-dense measures don't fit 4–5 legibly.)
   - The **next line**, about 90 dp, below at `ink-faded`.
 - **Staff.** One tenor staff, in the clef the printed score uses for the tenor line (§13).
 - **Position.** The current measure gets an `accent-tint` fill. A 2 dp `accent` playhead marks the exact position. Measure numbers sit above the staff.
@@ -326,7 +326,7 @@ Lyrics are original placeholder text. Don't substitute real lyrics.
 
 - On a phone call or competing audio, follow the platform and show the real paused state. Never resume automatically.
 - After returning to the foreground, re-read state from the audio element.
-- Keep screen on uses the Screen Wake Lock API while playing, re-requested when the page becomes visible.
+- Keep screen on uses the Screen Wake Lock API while playing, re-requested when the page becomes visible. Verified on the Pixel 7 with the PoC: with it on, the screen stayed awake past the phone's 2-minute timeout (Chrome's window holds `KEEP_SCREEN_ON`); with it off, the screen slept on time while audio kept playing; Chrome released the lock when the screen went off and the page re-acquired it on return.
 
 ---
 
@@ -576,7 +576,7 @@ app/                    → /rehearsal/
 │   ├── settings.js     persisted preferences
 │   ├── views/          score, lyrics, score-lyrics, measure, whole-score
 │   └── score/          page-images.js, musicxml.js
-├── vendor/             the MusicXML renderer
+├── vendor/             the MusicXML renderer (OSMD)
 ├── setup/              the setup page → /rehearsal/setup/
 ├── content/            real content (gitignored) → /rehearsal/content/
 └── content.example/    placeholder content (in git)
@@ -619,7 +619,7 @@ npx http-server app -p 8080 -c-1
 
 ### MusicXML renderer
 
-**Recommendation: OpenSheetMusicDisplay (OSMD)**, pending Jordan's confirmation (§20). Tested on the Pixel 7 with the first song's tenor MusicXML (84 measures, 90 KB) using `poc/renderers.html`, with both renderers scaled to the same staff height:
+**Decision: OpenSheetMusicDisplay (OSMD).** Tested on the Pixel 7 with the first song's tenor MusicXML (84 measures, 90 KB) using `poc/renderers.html`, with both renderers scaled to the same staff height:
 
 | | OSMD 2.2.0 | Verovio 6.3.0 |
 |---|---|---|
@@ -636,7 +636,7 @@ npx http-server app -p 8080 -c-1
 | Extras to turn off | None | "Tenor" / "T." staff labels |
 | License | BSD-3-Clause | LGPL-3.0 |
 
-- OSMD needs its `compacttight` drawing preset and tighter spacing (`VoiceSpacingMultiplierVexflow` 0.55, `VoiceSpacingAddendVexflow` 2.0, `LyricsXPaddingFactorForLongLyrics` 0.5) to match Verovio's density. Its defaults fit only 1–2 measures across the phone.
+- Start from OSMD's `compacttight` drawing preset and tighter spacing (`VoiceSpacingMultiplierVexflow` 0.55, `VoiceSpacingAddendVexflow` 2.0, `LyricsXPaddingFactorForLongLyrics` 0.5), then tune for about 3 measures across the phone (§6). OSMD's defaults fit only 1–2.
 - Both rendered the tenor-only file correctly, and both kept the source clef. Both can hide other parts if a multi-part file ever arrives.
 
 ### Security and privacy
@@ -672,6 +672,7 @@ Verified on a Pixel 7 (Android 16, Chrome 153) with the PoC.
 ### Service worker
 
 - Hand-written. App files are versioned by `APP_VERSION` in `sw.js`; content by the catalog's `catalogRevision`.
+- **Don't take over an open page** (no `clients.claim()`). On the first visit the player streams audio from the network; if the service worker took over mid-session, the audio element's next Range request would come from the cache, and Chrome fails a stream whose source changes partway ("data source error"). The PoC hit this on the Pixel. The service worker serves the player from the next launch.
 - **Scope.** The player registers `sw.js` with scope `./`, which on the live site is `/rehearsal/`. That scope also covers `/rehearsal/setup/` and `/rehearsal/poc/`, so the worker ignores (never answers) any request under `setup/` or `poc/`:
   - the setup page always loads fresh from the server, and registers no service worker of its own;
   - the PoC keeps its own worker (scope `/rehearsal/poc/`, which wins for PoC pages) and is never served the app's files.
@@ -695,11 +696,9 @@ Launching offline without a song's audio saved shows "This song isn't available 
 
 ## 20. Open questions
 
-1. **Ribbon motion** (§6): line paging or continuous? Decide on the phone.
+1. **Ribbon motion** (§6): line paging or continuous? Decide on the phone. With about 3 measures on screen, line paging would turn the page every few seconds, which favors continuous motion.
 2. **Colors** (§3): decide on the phone.
-3. **MusicXML renderer** (§17): the phone test recommends OSMD. Confirm.
-4. **Ribbon density** (§6): at a readable size the first song fits about 2–3 measures across the phone, not 4–5. Accept fewer measures, or shrink the staff? With so few measures on screen, line paging would turn the page every few seconds, which favors continuous motion.
-5. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
+3. **Content still needed per song:** page images or MusicXML, the section map, rest ranges, lyric phrases. Loops come later from the teacher.
 
 ---
 
@@ -740,13 +739,12 @@ Launching offline without a song's audio saved shows "This song isn't available 
 ### On the Pixel
 
 - Chrome tab and installed PWA.
-- Screen locked for 5+ minutes while playing.
+- Screen off while playing: audio continues and loops keep wrapping. (A 35-second check is enough.)
 - Lock-screen and notification controls, metadata and artwork.
-- A phone call or competing audio: no automatic resume.
+- Keep screen on holds the screen past the phone's timeout.
 - Airplane-mode cold launch after everything is saved.
 - Rotation during playback and with a sheet open.
-- Bluetooth headphone and watch controls.
-- Pitch at 0.5× and 1.5×.
+- Pitch at 0.5× and 1.5×, by ear.
 - Ribbon readability and control reach at arm's length.
 
 ### Content QA, per song
