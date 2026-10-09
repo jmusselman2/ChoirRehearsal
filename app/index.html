@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Choir Rehearsal</title>
+  <meta name="description" content="Tenor rehearsal player: recordings with the tenor line and lyrics, synced.">
+  <meta name="theme-color" content="#1B1F24">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-speed" viewBox="0 0 24 24"><path d="M4.5 16.5a8 8 0 1 1 15 0"/><path d="M12 13.5l3.5-4"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v11a2.5 2.5 0 0 0-2.5-2.5H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v11a2.5 2.5 0 0 1 2.5-2.5H21z"/></symbol>
+    <symbol id="i-loop" viewBox="0 0 24 24"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></symbol>
+    <symbol id="i-back5" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.2 3.6v3.6h3.6"/></symbol>
+    <symbol id="i-fwd5" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.8 3.6v3.6h-3.6"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 5v14"/><path d="M19 5.5v13L9 12z" fill="currentColor"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M18 5v14"/><path d="M5 5.5v13L15 12z" fill="currentColor"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+  </svg>
+
+  <div id="app" class="app" data-view="score-lyrics" data-ready="false">
+    <header class="hdr">
+      <div class="hdr-spacer" aria-hidden="true"></div>
+      <button type="button" id="titleBtn" class="title-btn" aria-haspopup="dialog" aria-controls="songSheet" disabled>
+        <span id="titleText">Choir Rehearsal</span>
+        <svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg>
+      </button>
+      <div class="hdr-actions">
+        <button type="button" id="lyricsSmaller" class="az" aria-label="Smaller lyrics" hidden>A−</button>
+        <button type="button" id="lyricsLarger" class="az" aria-label="Larger lyrics" hidden>A+</button>
+        <button type="button" id="settingsBtn" class="icon-btn" aria-label="Settings" aria-haspopup="dialog" aria-controls="settingsSheet">
+          <svg class="ico" aria-hidden="true"><use href="#i-gear"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div id="loopBanner" class="loop-banner" hidden>
+      <span class="loop-banner-text" id="loopBannerText"></span>
+      <button type="button" id="loopBannerStop" class="icon-btn" aria-label="Stop the loop">
+        <svg class="ico" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+
+    <main id="content" class="content">
+      <div id="status" class="status" role="status">
+        <p class="status-text" id="statusText">Loading…</p>
+        <p class="status-detail" id="statusDetail" hidden></p>
+        <button type="button" class="pill-btn" id="statusRetry" hidden>Retry</button>
+      </div>
+      <p id="viewNote" class="view-note" hidden></p>
+      <section id="viewScore" class="view" data-for="score" aria-label="Score" hidden></section>
+      <section id="viewLyrics" class="view" data-for="lyrics" aria-label="Lyrics" hidden></section>
+      <section id="viewScoreLyrics" class="view" data-for="score-lyrics" aria-label="Score and lyrics" hidden></section>
+      <section id="viewMeasure" class="view" data-for="measure" aria-label="Measure follow-along" hidden></section>
+    </main>
+
+    <section class="player" aria-label="Player">
+      <div class="chips">
+        <button type="button" id="speedChip" class="chip" aria-haspopup="dialog" aria-controls="speedSheet">
+          <svg class="ico" aria-hidden="true"><use href="#i-speed"/></svg><span id="speedChipText">1.0×</span>
+        </button>
+        <button type="button" id="viewChip" class="chip chip-view" aria-haspopup="dialog" aria-controls="viewSheet">
+          <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span id="viewChipText" class="chip-label">Score + Lyrics</span><svg class="ico caret" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" id="loopChip" class="chip" aria-haspopup="dialog" aria-controls="loopSheet" hidden>
+          <svg class="ico" aria-hidden="true"><use href="#i-loop"/></svg><span id="loopChipText" class="chip-label">Loops</span>
+        </button>
+      </div>
+      <div class="scrub" id="scrub">
+        <div class="scrub-track" aria-hidden="true">
+          <div class="scrub-loop" id="scrubLoop" hidden></div>
+          <div class="scrub-fill" id="scrubFill"></div>
+          <div class="scrub-ticks" id="scrubTicks"></div>
+        </div>
+        <input type="range" id="scrubInput" class="scrub-input" min="0" max="0" step="0.1" value="0" aria-label="Position" disabled>
+      </div>
+      <div class="times"><span id="timeNow">0:00</span><span id="timeLeft">−0:00</span></div>
+      <div class="transport">
+        <button type="button" id="back5" class="tbtn" aria-label="Back 5 seconds"><span class="skipico"><svg class="ico" aria-hidden="true"><use href="#i-back5"/></svg><span aria-hidden="true">5</span></span></button>
+        <button type="button" id="prevBtn" class="tbtn" aria-label="Previous song"><svg class="ico" aria-hidden="true"><use href="#i-prev"/></svg></button>
+        <button type="button" id="playBtn" class="play" aria-label="Play" disabled><svg class="ico" aria-hidden="true"><use id="playIcon" href="#i-play"/></svg></button>
+        <button type="button" id="nextBtn" class="tbtn" aria-label="Next song"><svg class="ico" aria-hidden="true"><use href="#i-next"/></svg></button>
+        <button type="button" id="fwd5" class="tbtn" aria-label="Forward 5 seconds"><span class="skipico"><svg class="ico" aria-hidden="true"><use href="#i-fwd5"/></svg><span aria-hidden="true">5</span></span></button>
+      </div>
+    </section>
+  </div>
+
+  <section id="whole" class="whole" aria-label="Whole score" hidden>
+    <header class="whole-hdr">
+      <div class="hdr-spacer" aria-hidden="true"></div>
+      <h2 class="whole-title">Whole score</h2>
+      <button type="button" id="wholeClose" class="icon-btn" aria-label="Close the whole score"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div id="wholeScroll" class="whole-scroll" tabindex="0" aria-label="Whole score pages"></div>
+    <button type="button" id="wholeJump" class="pill-btn whole-jump" hidden>Jump to current section</button>
+    <div class="whole-bar">
+      <button type="button" id="wholePlay" class="play small" aria-label="Play"><svg class="ico" aria-hidden="true"><use id="wholePlayIcon" href="#i-play"/></svg></button>
+      <span id="wholeSong" class="whole-song"></span>
+      <span id="wholeTime" class="whole-time">0:00</span>
+    </div>
+  </section>
+
+  <dialog id="songSheet" class="sheet" aria-labelledby="songSheetTitle">
+    <div class="sheet-body">
+      <div class="grab" aria-hidden="true"></div>
+      <h2 id="songSheetTitle" class="sheet-title">Switch song</h2>
+      <ul id="songList" class="song-list"></ul>
+    </div>
+  </dialog>
+
+  <dialog id="viewSheet" class="sheet sheet-small" aria-labelledby="viewSheetTitle">
+    <div class="sheet-body">
+      <div class="grab" aria-hidden="true"></div>
+      <h2 id="viewSheetTitle" class="sheet-title">View</h2>
+      <div id="viewMenu" class="menu" role="menu"></div>
+    </div>
+  </dialog>
+
+  <dialog id="speedSheet" class="sheet sheet-small" aria-labelledby="speedSheetTitle">
+    <div class="sheet-body">
+      <div class="grab" aria-hidden="true"></div>
+      <h2 id="speedSheetTitle" class="sheet-title">Playback speed</h2>
+      <div class="row"><label for="speedQuick">Speed</label><output id="speedQuickValue" class="val" for="speedQuick">1.0×</output></div>
+      <input type="range" id="speedQuick" class="range" min="0.5" max="1.5" step="0.1" value="1">
+      <div class="range-ends" aria-hidden="true"><span>0.5×</span><span>Pitch kept</span><span>1.5×</span></div>
+    </div>
+  </dialog>
+
+  <dialog id="loopSheet" class="sheet" aria-labelledby="loopSheetTitle">
+    <div class="sheet-body">
+      <div class="grab" aria-hidden="true"></div>
+      <h2 id="loopSheetTitle" class="sheet-title">Practice loops</h2>
+      <div id="loopSheetList" class="loop-list"></div>
+    </div>
+  </dialog>
+
+  <dialog id="settingsSheet" class="sheet sheet-tall" aria-labelledby="settingsTitle">
+    <div class="sheet-body">
+      <div class="grab" aria-hidden="true"></div>
+      <div class="sheet-head">
+        <h2 id="settingsTitle" class="sheet-title">Settings</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close settings"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+      </div>
+
+      <section class="grp" aria-labelledby="grpPlayback">
+        <h3 id="grpPlayback">Playback</h3>
+        <div class="row"><label for="speedSetting">Speed</label><output id="speedSettingValue" class="val" for="speedSetting">1.0×</output></div>
+        <input type="range" id="speedSetting" class="range" min="0.5" max="1.5" step="0.1" value="1">
+        <div class="range-ends" aria-hidden="true"><span>0.5×</span><span>Pitch kept</span><span>1.5×</span></div>
+        <div class="row"><span>Skip interval</span><span class="val-plain">5 s</span></div>
+        <div class="row row-wrap">
+          <span id="repeatLabel">Repeat</span>
+          <div class="seg" role="group" aria-labelledby="repeatLabel" id="repeatSeg">
+            <button type="button" data-value="off" aria-pressed="true">Off</button>
+            <button type="button" data-value="one" aria-pressed="false">This song</button>
+            <button type="button" data-value="all" aria-pressed="false">All songs</button>
+          </div>
+        </div>
+        <p class="hint" id="repeatHint">Plays through to the end of the last song, then stops.</p>
+      </section>
+
+      <section class="grp" aria-labelledby="grpDisplay">
+        <h3 id="grpDisplay">Display</h3>
+        <div class="row row-wrap">
+          <span id="viewModeLabel">View mode</span>
+          <div class="seg seg-wrap" role="group" aria-labelledby="viewModeLabel" id="viewModeSeg">
+            <button type="button" data-value="score" aria-pressed="false">Score</button>
+            <button type="button" data-value="lyrics" aria-pressed="false">Lyrics</button>
+            <button type="button" data-value="score-lyrics" aria-pressed="true">Score + Lyrics</button>
+            <button type="button" data-value="measure" aria-pressed="false">Measure</button>
+          </div>
+        </div>
+        <div class="row">
+          <span id="lyricsSizeLabel">Lyrics size</span>
+          <div class="seg" role="group" aria-labelledby="lyricsSizeLabel">
+            <button type="button" id="settingsSmaller" aria-label="Smaller lyrics">A−</button>
+            <span class="seg-value" id="lyricsSizeValue">22</span>
+            <button type="button" id="settingsLarger" aria-label="Larger lyrics">A+</button>
+          </div>
+        </div>
+        <div class="row"><span id="landscapeLabel">Force landscape</span><button type="button" id="landscapeSwitch" class="switch" role="switch" aria-checked="true" aria-labelledby="landscapeLabel"></button></div>
+        <p class="hint">Turn off to follow your phone's orientation.</p>
+        <div class="row"><span id="wakeLabel">Keep screen on while playing</span><button type="button" id="wakeSwitch" class="switch" role="switch" aria-checked="true" aria-labelledby="wakeLabel"></button></div>
+      </section>
+
+      <section class="grp" aria-labelledby="grpLoops">
+        <h3 id="grpLoops">Practice loops</h3>
+        <div class="row"><span id="loopsLabel">Show loops</span><button type="button" id="loopsSwitch" class="switch" role="switch" aria-checked="false" aria-labelledby="loopsLabel"></button></div>
+        <div id="settingsLoopList" class="loop-list" hidden></div>
+        <p class="hint">Loops are assigned by your teacher.</p>
+      </section>
+
+      <footer class="sheet-foot">
+        <p id="offlineStatus" class="foot-status">Online only</p>
+        <p id="sampleStatus" class="foot-status" hidden>Sample songs</p>
+        <p class="foot-credit">Created by Jordan Musselman</p>
+      </footer>
+    </div>
+  </dialog>
+
+  <audio id="audio" preload="auto"></audio>
+</body>
+</html>

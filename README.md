@@ -49,13 +49,59 @@ It's hosted at `jordanmusselman.com/rehearsal/`.
 | ---------------------------- | ---------------------------------------------------------------------------- |
 | [docs/spec.md](docs/spec.md) | The spec: screens, behavior, timing model, data, offline, phases, tests      |
 | [poc/](poc/README.md)        | Throwaway proof of concept: background playback, lock screen, loops, offline |
-| `app/` (planned)             | The real app. Everything under it uploads as-is to `/rehearsal/`             |
+| `app/`                       | The real app. Everything under it uploads as-is to `/rehearsal/`             |
 | `app/content/`               | Real songs, scores and lyrics. Gitignored, because they're copyrighted       |
+| `app/content.example/`       | Placeholder Song One–Four (spec §10), used when `app/content/` is missing   |
+| `app/vendor/`                | OpenSheetMusicDisplay 2.2.0, vendored with its licenses (no CDN)            |
+| `tests/`                     | `node:test` unit tests for the timing, loop, playback, content and settings core |
+| `tools/`                     | `generate-sample-content.mjs`, which builds `app/content.example/`           |
+
+## Run it locally
+
+From the repo root:
+
+```powershell
+npx http-server app -p 8080 -c-1
+```
+
+Then open http://localhost:8080/. Use `http-server` rather than Python's server, which has no
+Range support, so seeking breaks. The player loads `app/content/catalog.json`; when that file
+doesn't exist (a 404, as in a fresh clone) it loads the placeholder songs from
+`app/content.example/` instead and shows **Sample songs** in the Settings footer. Any other
+failure (a server or permission error, malformed JSON, a catalog that fails validation) shows an
+error with Retry rather than falling back.
+
+Every URL inside `app/` is relative, so the same files work at `/` locally and at `/rehearsal/`
+on the live site. On a phone, forward port 8080 from `chrome://inspect`; `localhost` counts as a
+secure context, so Media Session works.
+
+## Tests
+
+```powershell
+node --test tests
+```
+
+No dependencies or install step. The tests import the same modules the player uses from `app/js/`.
+
+## Sample content
+
+`app/content.example/` is generated and committed. Its songs, lyrics, MusicXML and audio are
+original placeholders: the audio is one short tone at the start of every printed measure, placed
+by `app/js/timing.js`, so sync, the rest countdown, loops and Repeat can be checked without the
+copyrighted recordings. To rebuild it (the MP3s need `ffmpeg` with libmp3lame; the player never does):
+
+```powershell
+node tools/generate-sample-content.mjs
+```
+
+The output is deterministic. `--no-audio` rebuilds only the JSON and MusicXML.
 
 ## Status
 
 1. **Proof of concept:** background playback, lock-screen controls, metadata, artwork, loop wrapping
    and offline playback with seeking, all verified on a Pixel 7, in a Chrome tab and as an installed app.
    Keep-screen-on works there too, and OpenSheetMusicDisplay was chosen as the MusicXML renderer (spec §17).
-2. **Clickable prototype:** next. See spec §21.
-3. **Real app:** after that.
+2. **Clickable prototype:** done and Pixel-reviewed (`New folder/`, see spec §21).
+3. **Player:** the production shell, sample content, playback/timing/settings core and the score,
+   lyrics, measure and whole-score views are built (finishing guide steps 3–5). The setup page,
+   offline support (service worker) and real-content timing are next.
