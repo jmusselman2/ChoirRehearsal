@@ -11,7 +11,7 @@
 // - Requests under setup/ and poc/ are never answered: the setup page always loads fresh, and the
 //   PoC keeps its own worker.
 
-const APP_VERSION = '2026-10-09.2';
+const APP_VERSION = '2026-10-09.7';
 const SHELL_CACHE = `rehearsal-shell-${APP_VERSION}`;
 const META_CACHE = 'rehearsal-meta';
 const CONTENT_PREFIX = 'rehearsal-content-';
@@ -40,6 +40,7 @@ const SHELL = [
   'js/wake-lock.js',
   'js/score/measures.js',
   'js/score/osmd.js',
+  'js/score/staff-size.js',
   'js/ui/layers.js',
   'js/views/lyrics.js',
   'js/views/measure.js',

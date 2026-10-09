@@ -1,6 +1,7 @@
-// The paper card that shows the current section's tenor systems (spec §5, Score and Score +
-// Lyrics). Every musical value comes from the timing Position; this file only maps measures onto
-// the rendered systems.
+// The paper card that follows the tenor line (spec §5, Score and Score + Lyrics): the current
+// system sits at the top with the next ones below, and the card glides up one system at a time.
+// Every musical value comes from the timing Position; this file only maps measures onto the
+// rendered systems.
 
 import { h, prefersReducedMotion } from '../format.js';
 import { renderScore, fetchScoreXml, forgetScoreXml } from '../score/osmd.js';
@@ -24,6 +25,7 @@ export class ScoreCard {
     this.bands = [];
     this.bandKey = '';
     this.shownSection = undefined;
+    this.shownSystem = -1;
   }
 
   setSong(ctx) {
@@ -35,6 +37,7 @@ export class ScoreCard {
     this.bands = [];
     this.bandKey = '';
     this.shownSection = undefined;
+    this.shownSystem = -1;
     this.lineLabel.textContent = ctx && ctx.status === 'ok' ? ctx.line : '';
     this.sectionLabel.textContent = '';
     this.setState(ctx && ctx.scoreUrl ? 'loading' : 'failed');
@@ -71,6 +74,7 @@ export class ScoreCard {
       this.bands = [];
       this.bandKey = '';
       this.shownSection = undefined;
+      this.shownSystem = -1;
       this.setState('ready');
     } catch (error) {
       if (token !== this.renderToken) return;
@@ -95,38 +99,35 @@ export class ScoreCard {
     if (!position.timed) {
       // Not synced: the whole tenor line, scrolled by hand.
       this.window.classList.add('free');
+      this.sheet.classList.remove('glide');
       this.sheet.style.transform = '';
-      this.sheet.style.clipPath = '';
+      this.shownSystem = -1;
       this.tint.hidden = true;
       this.sectionLabel.textContent = '';
       return;
     }
     this.window.classList.remove('free');
     const section = position.section;
-    const from = section ? section.from : position.measure;
-    const to = section ? section.to : position.measure;
-    const first = L.systemOf(from) || L.systemOf(position.measure);
-    const last = L.systemOf(to) || first;
-    const current = L.systemOf(position.measure) || first;
-    if (!first) return;
+    const current = L.systemOf(position.measure) || (section && L.systemOf(section.from));
+    if (!current) return;
 
-    let top = first.top;
-    const bottom = last.bottom;
+    const index = L.systems.indexOf(current);
     const room = this.window.clientHeight;
-    if (bottom - top > room && current) {
-      // A long section: keep the current system in view, as near the section start as possible.
-      top = Math.min(Math.max(current.top, top), Math.max(top, bottom - room));
+    if (index !== this.shownSystem || room !== this.shownRoom) {
+      // Start where the previous system's lyrics end, so marks above the staff stay in view,
+      // and stop before blank paper at the end of the song.
+      const prev = L.systems[index - 1];
+      const top = Math.max(0, Math.min(prev ? Math.min(current.top, prev.bottom) : 0, L.height - room));
+      // Glide to the next or previous system; a jump further than that (a seek) moves at once.
+      const glide = this.shownSystem !== -1 && Math.abs(index - this.shownSystem) === 1 && !prefersReducedMotion();
+      this.sheet.classList.toggle('glide', glide);
+      this.sheet.style.transform = `translateY(${-top}px)`;
+      this.shownSystem = index;
+      this.shownRoom = room;
     }
-    this.sheet.style.transform = `translateY(${-top}px)`;
-    this.sheet.style.clipPath = `inset(${top}px 0 ${Math.max(0, L.height - bottom)}px 0)`;
 
     const sectionKey = section ? section.id : null;
     if (sectionKey !== this.shownSection) {
-      if (this.shownSection !== undefined && !prefersReducedMotion()) {
-        this.sheet.classList.remove('fade');
-        void this.sheet.offsetWidth; // restart the cross-fade
-        this.sheet.classList.add('fade');
-      }
       this.shownSection = sectionKey;
       this.sectionLabel.textContent = section ? section.label : '';
     }

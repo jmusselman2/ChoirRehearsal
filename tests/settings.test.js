@@ -1,19 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  DEFAULTS, STORAGE_KEY, loadSettings, saveSettings, sanitizeSettings, launchState, normalizeSpeed, stepLyricsSize,
+  DEFAULTS, STORAGE_KEY, LEGACY_STORAGE_KEY, loadSettings, saveSettings, sanitizeSettings, launchState, normalizeSpeed, stepLyricsSize,
 } from '../app/js/settings.js';
 import { MemoryStorage } from './fixtures.js';
 
 const ALLOWLIST = ['lastSongId', 'viewMode', 'speed', 'lyricsSize', 'repeat', 'forceLandscape', 'keepScreenOn', 'loopsEnabled', 'selectedLoops'];
 
-test('defaults: Force landscape on, Loops off, Repeat off, Score + Lyrics, 1.0×', () => {
+test('defaults: Force landscape on, Loops off, Repeat off, Measure, 1.0×', () => {
   const s = loadSettings(new MemoryStorage());
   assert.equal(s.forceLandscape, true);
   assert.equal(s.keepScreenOn, true);
   assert.equal(s.loopsEnabled, false);
   assert.equal(s.repeat, 'off');
-  assert.equal(s.viewMode, 'score-lyrics');
+  assert.equal(s.viewMode, 'measure');
   assert.equal(s.speed, 1);
   assert.equal(s.lyricsSize, 22);
   assert.deepEqual(s.selectedLoops, {});
@@ -43,7 +43,7 @@ test('each invalid value falls back individually', () => {
     forceLandscape: 'yes', keepScreenOn: 0, loopsEnabled: null, selectedLoops: { 'song-one': 7, BAD: 'x', 'song-two': 'final-hold' },
   });
   assert.equal(s.lastSongId, null);
-  assert.equal(s.viewMode, 'score-lyrics');
+  assert.equal(s.viewMode, 'measure');
   assert.equal(s.speed, 1);
   assert.equal(s.lyricsSize, 22);
   assert.equal(s.repeat, 'off');
@@ -86,9 +86,36 @@ test('only the allowlisted settings are persisted', () => {
 
 test('settings round-trip and Force landscape off persists', () => {
   const storage = new MemoryStorage();
-  const s = { ...DEFAULTS, forceLandscape: false, repeat: 'all', viewMode: 'measure', lyricsSize: 26, loopsEnabled: true, selectedLoops: {} };
+  const s = { ...DEFAULTS, forceLandscape: false, repeat: 'all', viewMode: 'score-lyrics', lyricsSize: 26, loopsEnabled: true, selectedLoops: {} };
   saveSettings(storage, s);
   assert.deepEqual(loadSettings(storage), { ...s, lastSongId: null });
+});
+
+test('v1 settings carry over except the view, which opens on Measure once', () => {
+  const storage = new MemoryStorage({
+    [LEGACY_STORAGE_KEY]: JSON.stringify({ lastSongId: 'song-two', viewMode: 'score-lyrics', speed: 0.8, forceLandscape: false }),
+  });
+  const s = loadSettings(storage);
+  assert.equal(s.viewMode, 'measure');
+  assert.equal(s.speed, 0.8);
+  assert.equal(s.lastSongId, 'song-two');
+  assert.equal(s.forceLandscape, false);
+});
+
+test('a v2 view choice is kept, and v1 is ignored once v2 exists', () => {
+  const storage = new MemoryStorage({
+    [LEGACY_STORAGE_KEY]: JSON.stringify({ viewMode: 'lyrics', speed: 0.6 }),
+    [STORAGE_KEY]: JSON.stringify({ viewMode: 'score-lyrics' }),
+  });
+  const s = loadSettings(storage);
+  assert.equal(s.viewMode, 'score-lyrics');
+  assert.equal(s.speed, 1);
+});
+
+test('a corrupt v1 entry falls back to defaults', () => {
+  for (const text of ['{not json', '[]', '42', 'null']) {
+    assert.deepEqual(loadSettings(new MemoryStorage({ [LEGACY_STORAGE_KEY]: text })), { ...DEFAULTS, selectedLoops: {} }, text);
+  }
 });
 
 test('relaunch: the last song at 0:00, paused, with no loop running', () => {

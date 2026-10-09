@@ -38,9 +38,12 @@ It's hosted at `jordanmusselman.com/rehearsal/`.
 - **Offline is automatic.** All four songs are saved after the first load; there's no download button.
 - **No Car Mode.** Lock-screen controls cover eyes-free listening, and the Lyrics view covers a quick glance.
 - **Landscape by default.** Force landscape starts on. It can be disabled in Settings to
-  follow the phone orientation; if a browser denies the runtime lock, the music remains visible.
-- **Scores are MusicXML**, rendered with OpenSheetMusicDisplay. The measure ribbon scrolls continuously
-  under a fixed playhead, about 3 measures at a time.
+  follow the phone orientation; if a browser denies the runtime lock, the music remains visible
+  and the setting turns itself off, ready to be turned on from Settings.
+- **Scores are MusicXML**, rendered with OpenSheetMusicDisplay. Measure is the default view: the ribbon
+  scrolls continuously under a fixed playhead. The staff grows to fill the screen: portrait shows
+  about 2–3 measures with the next line below, and landscape runs edge to edge with the playhead a
+  third of the way in.
 - **Plain HTML and JavaScript.** No build step and no framework.
 
 ## Repo layout

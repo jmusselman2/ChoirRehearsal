@@ -29,8 +29,21 @@ const settings = loadSettings(storage);
 const persist = () => saveSettings(storage, settings);
 
 const orientation = createOrientation({ screen: window.screen, document, matchMedia: (q) => window.matchMedia(q) });
-// Best-effort and silent: the music shows immediately whatever the browser decides (spec §4).
-if (settings.forceLandscape) orientation.apply(true);
+let orientationRequest = 0;
+/**
+ * Best-effort and silent: the music shows immediately whatever the browser decides (spec §4).
+ * If the lock doesn't take, the switch turns itself off so it's ready to be turned on later.
+ */
+function requestLandscape(options) {
+  const mine = ++orientationRequest;
+  orientation.apply(true, options).then((locked) => {
+    if (locked || mine !== orientationRequest || !settings.forceLandscape) return;
+    settings.forceLandscape = false;
+    persist();
+    syncSettingsUi();
+  });
+}
+if (settings.forceLandscape) requestLandscape();
 const wake = createWakeLock({ navigator, document });
 const layers = createLayers();
 const offline = createOffline({ onStatus: (text) => { $('offlineStatus').textContent = text; } });
@@ -553,7 +566,8 @@ function buildViewMenu() {
   const menu = $('viewMenu');
   menu.textContent = '';
   const mode = effectiveViewMode(ctx);
-  for (const key of ['score', 'lyrics', 'score-lyrics', 'measure']) {
+  // Measure is the main screen (spec §5, §6), so it leads the list.
+  for (const key of ['measure', 'score-lyrics', 'score', 'lyrics']) {
     const disabled = key === 'measure' && ctx && ctx.status === 'ok' && !ctx.measureAvailable;
     const item = h('button', {
       type: 'button', class: 'menu-item', role: 'menuitemradio', 'aria-checked': String(key === mode), disabled,
@@ -654,7 +668,12 @@ $('landscapeSwitch').addEventListener('click', () => {
   persist();
   syncSettingsUi();
   // On: a user-triggered request may enter fullscreen first. Off: unlock immediately.
-  orientation.apply(settings.forceLandscape, { userInitiated: true });
+  if (settings.forceLandscape) {
+    requestLandscape({ userInitiated: true });
+  } else {
+    orientationRequest++;
+    orientation.apply(false);
+  }
 });
 
 $('wakeSwitch').addEventListener('click', () => {

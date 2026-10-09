@@ -29,7 +29,7 @@
     <symbol id="i-note" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
   </svg>
 
-  <div id="app" class="app" data-view="score-lyrics" data-ready="false">
+  <div id="app" class="app" data-view="measure" data-ready="false">
     <header class="hdr">
       <div class="hdr-spacer" aria-hidden="true"></div>
       <button type="button" id="titleBtn" class="title-btn" aria-haspopup="dialog" aria-controls="songSheet" disabled>
@@ -71,7 +71,7 @@
           <svg class="ico" aria-hidden="true"><use href="#i-speed"/></svg><span id="speedChipText">1.0×</span>
         </button>
         <button type="button" id="viewChip" class="chip chip-view" aria-haspopup="dialog" aria-controls="viewSheet">
-          <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span id="viewChipText" class="chip-label">Score + Lyrics</span><svg class="ico caret" aria-hidden="true"><use href="#i-chevron"/></svg>
+          <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span id="viewChipText" class="chip-label">Measure</span><svg class="ico caret" aria-hidden="true"><use href="#i-chevron"/></svg>
         </button>
         <button type="button" id="loopChip" class="chip" aria-haspopup="dialog" aria-controls="loopSheet" hidden>
           <svg class="ico" aria-hidden="true"><use href="#i-loop"/></svg><span id="loopChipText" class="chip-label">Loops</span>
@@ -175,10 +175,10 @@
         <div class="row row-wrap">
           <span id="viewModeLabel">View mode</span>
           <div class="seg seg-wrap" role="group" aria-labelledby="viewModeLabel" id="viewModeSeg">
+            <button type="button" data-value="measure" aria-pressed="true">Measure</button>
+            <button type="button" data-value="score-lyrics" aria-pressed="false">Score + Lyrics</button>
             <button type="button" data-value="score" aria-pressed="false">Score</button>
             <button type="button" data-value="lyrics" aria-pressed="false">Lyrics</button>
-            <button type="button" data-value="score-lyrics" aria-pressed="true">Score + Lyrics</button>
-            <button type="button" data-value="measure" aria-pressed="false">Measure</button>
           </div>
         </div>
         <div class="row">

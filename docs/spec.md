@@ -118,17 +118,27 @@ Use the system font (Roboto on Android).
 
 ## 4. Persistent layout (phone)
 
-`Force landscape` is on by default. In landscape, the header spans the screen; the content
-area occupies roughly the left two thirds and the player bar becomes a right-side control
-rail. Score + Lyrics puts score and lyrics side by side, and Measure may use the extra width
-for more surrounding measures without reducing staff size. When the setting is off, use the
-portrait layout below.
+`Force landscape` is on by default. In landscape (revised on the Pixel 7, Oct 9), a 48 dp
+header spans the screen, the content area takes the full width, and the player bar folds into
+one row along the bottom: transport (play/pause at 52 dp), then the scrub bar with its times,
+then the chips. A long loop name truncates before the view-mode chip does. Score + Lyrics puts
+the score on the left and the phrases in a column beside it (about 28%, 200–300 dp), so the
+score gets about 4–6 measures per line. The column keeps its width when a section has no
+lyrics, so the score never re-renders for that. Measure runs the ribbon edge to edge with the
+playhead about a third of the way in, so the width shows about 2 measures behind and 4 ahead
+at the same staff size (§6). The earlier right-side control rail left
+most of its space empty and squeezed the score to a third of the screen. When the setting is
+off, use the portrait layout below.
 
 ### Orientation behavior
 
 - Persist a `Force landscape` toggle, default **on**.
 - On launch and whenever the toggle turns on, request `screen.orientation.lock("landscape")`.
   A user-triggered retry may enter fullscreen first when the browser requires it.
+- If the lock doesn't take (a Chrome tab refuses it without fullscreen at launch, for example),
+  the toggle turns itself off and that's persisted, so the switch shows the real state and is
+  ready to be turned on later. Turning it on from Settings is user-triggered, so it can enter
+  fullscreen and lock.
 - Browser support is not guaranteed. If the lock is refused, show the music immediately in
   the current orientation. Do not show a warning, confirmation, rotate prompt, or redirect to
   Settings. The ordinary header gear remains the escape path, and playback state must not
@@ -154,7 +164,7 @@ From top to bottom:
 5. **Player bar**, about 196 dp, on `surface`:
    - **Chip row**, 36 dp chips, left-aligned with 8 dp gaps:
      - Speed chip: `1.0×`. Opens a small speed sheet with the same slider as Settings.
-     - View-mode chip: `Score + Lyrics ▾`.
+     - View-mode chip: `Measure ▾` (the default view).
      - Loop chip: `⟲ Loops`, or `⟲ Bridge entrance` while a loop is active. Shown only when Loops is on in Settings.
    - **Scrub bar** with elapsed time on the left and remaining time on the right. The played portion is `accent`. Section starts are small ticks. An active loop's range shows as a `loop-band` block.
    - **Transport**, centered: −5 · ⏮ · ▶ · ⏭ · +5. Play/pause is a 64 dp circle with a 2 dp `accent` ring. The other buttons are 48 dp.
@@ -170,17 +180,17 @@ From top to bottom:
 The view-mode chip opens a small menu:
 
 ```
+• Measure           (disabled: "Needs MusicXML" on page-image songs)
+  Score + Lyrics
   Score
   Lyrics
-• Score + Lyrics
-  Measure           (disabled: "Needs MusicXML" on page-image songs)
   ─────────────
   Whole score →
 ```
 
-The choice persists across launches and song changes. If the saved view is Measure and the new song has no MusicXML, show Score + Lyrics with a one-line note.
+**Measure is the default view** (changed Oct 9), listed first here and in Settings. The choice persists across launches and song changes. If the saved view is Measure and the new song has no MusicXML, show Score + Lyrics with a one-line note.
 
-- **Score.** A paper card showing the current section of the tenor score. For page-image songs, this is a crop of the section box; for MusicXML songs, the matching tenor system(s). When the section changes, the card cross-fades. A thin `accent` bar on the card's left edge marks it as current.
+- **Score.** A paper card showing the current section of the tenor score. For page-image songs, this is a crop of the section box; for MusicXML songs, the tenor line follows continuously: the current system sits at the top of the card with the next systems below it, and the card glides up one system as playback reaches the next (no motion with reduced motion; a seek of more than one system moves at once). The card head names the current section. Wrapped systems use roomier spacing than the ribbon (`VoiceSpacingMultiplierVexflow` 0.65, `VoiceSpacingAddendVexflow` 2.5, `LyricsXPaddingFactorForLongLyrics` 1.0), about 2–3 measures per line in portrait, so the real Alleluia lyrics don't run together. A thin `accent` bar on the card's left edge marks it as current.
 - **Lyrics.** A vertical list of sections, each made of lyric phrases (§14):
   - The current section is centered, with a 3 dp `accent` left marker. Its current phrase is bright (22 / 500); its other phrases are `text-2`.
   - The sections before and after are dimmed (`text-3`).
@@ -188,10 +198,10 @@ The choice persists across launches and song changes. If the saved view is Measu
   - A− and A+ sit on the right of the header, just left of ⚙. The left spacer widens to match, so the title stays centered.
   - The list scrolls itself. If the user scrolls manually, auto-follow pauses until they tap "Follow" (a small pill at the bottom of the list).
   - During a rest with no current phrase, the next phrase shows dimmed with the countdown.
-- **Score + Lyrics** (the default view). The paper card holds the current section and takes about 55% of the content area. Below it, the current phrase at 20 / 500, with the next phrase dimmed.
+- **Score + Lyrics.** The paper card takes the room the lyrics don't need. Below it (beside it in landscape), the current phrase at 20 / 500, with the next phrase dimmed, in a block sized for two lines of each so the card doesn't jump as phrases change. The section name isn't repeated there, because the card head shows it.
   - No lyrics for this section: the score expands and "Lyrics unavailable for this section" shows in `text-3`.
   - The score can't render: playback continues, the lyrics show, and "Score unavailable" with a Retry button replaces the card.
-- **Measure** (Measure Follow-Along). The measure ribbon (§6), with the current section name and lyric line below it. MusicXML songs only.
+- **Measure** (Measure Follow-Along, the default view). The measure ribbon (§6), with the current section name and lyric line below it. MusicXML songs only.
 - **Whole score.** A full-screen browse view: the tenor pages scrolled vertically, with no sync and no auto-scroll. The header shows "Whole score" and an × that returns to the player. A compact bar at the bottom (play/pause, title, elapsed time) keeps playback controllable. A small "Jump to current section" button appears after scrolling away from it.
 
 ---
@@ -200,17 +210,35 @@ The choice persists across launches and song changes. If the saved view is Measu
 
 The ribbon is the main screen once MusicXML exists, so it has to be large.
 
-- **Size.** A paper card about 300 dp tall (roughly a third of the screen):
-  - The **current line**, about 190 dp, keeps the staff at about 30 px high and shows the
-    tenor staff with lyrics under the notes. Target **about 3 visible measures in portrait**
-    (normally 2 complete plus partial context) and **about 4 in landscape** (normally 3
-    complete plus partial context). Do not shrink the staff to force a fifth landscape
-    measure; the real Alleluia lyrics become too dense (§17).
-  - The **next line**, about 90 dp, below at `ink-faded`.
+- **Size.** A paper card sized to the phone (revised on the Pixel 7, Oct 9):
+  - The **current line** shows the tenor staff with lyrics under the notes. **Each phone gets
+    one staff size**, worked out from its screen, which doesn't change when the phone rotates,
+    goes fullscreen or shows Chrome's address bar, so none of those redraw the ribbon at a new
+    size. (Sizing from the page's height made the staff visibly snap between 1.5× and 1.4× when
+    Chrome's address bar came and went.) The size is the largest, in 5% steps from 1.0× to
+    1.6×, that fits the tightest layout, a landscape Chrome tab with its address bar, while
+    about **2 typical measures still fit across in portrait** (the next line carries the look
+    ahead) and **about 4½ in landscape**. A typical measure is taken as 150 px at 30 px, so
+    every song gets the same size. **The Pixel 7 gets 1.4×** (42 px staff); 412 × 915 and
+    smaller phones keep the 30 px staff, which never shrinks; the real Alleluia lyrics become
+    too dense (§17). The rule is in `app/js/score/staff-size.js` with unit tests. Only if a view
+    can't hold the phone's size (a loop banner on a short landscape screen, for example) does
+    the ribbon step down to what fits, drawing the new size off screen and swapping it in.
+  - **Vertical balance.** The ribbon reserves the height of its tallest marking for the whole
+    song, and in every song that was a metronome mark stacked under a tempo word, which left
+    25–35 px of empty paper above the staff almost everywhere. The ribbon omits metronome
+    marks (singers follow the recording's tempo) and keeps the tempo words; the page views
+    still show them. The lyrics get 16 px of paper below them (scaled with the staff) so they
+    don't sit on the card's edge.
+  - The **next line** below at `ink-faded`: at least 0.62 of the current line, growing into
+    the spare height of a tall portrait screen up to full size, so the room goes to the music
+    ahead rather than empty space. Whatever is still spare is split above and below the view,
+    and the lyric line keeps a steady two-line block (20 / 500) so nothing jumps as phrases
+    change. Landscape omits the next line.
 - **Staff.** One tenor staff, in the clef the printed score uses for the tenor line (§13).
 - **Position.** The current measure gets an `accent-tint` fill. A 2 dp `accent` playhead marks the exact position. Measure numbers sit above the staff.
-- **Motion: continuous (approved on the Pixel 7, Oct 9).** The playhead is fixed at the center and the music scrolls under it. The prototype comparison showed about three measures with stable left/right context; line paging showed only about two measures and would turn every few seconds, so line paging is not a production option.
-  - The faded "next line" below still shows the next few measures as an orientation cue.
+- **Motion: continuous (approved on the Pixel 7, Oct 9).** The playhead is fixed and the music scrolls under it: at the center in portrait, and about a third of the way in on the edge-to-edge landscape ribbon, so the wide screen goes to the music ahead. The prototype comparison showed about three measures with stable left/right context; line paging showed only about two measures and would turn every few seconds, so line paging is not a production option.
+  - In portrait, the faded "next line" below still shows the next few measures as an orientation cue. Landscape has no room for it and the wide line already shows what's ahead, so it's omitted; the countdown label sits in the ribbon's headroom at the top left instead of its own row, and the lyric line below is a single line (current phrase, then the next one dimmed, cut off with an ellipsis).
 - **Tenor rests and countdown.** When the current measure falls inside a rest range (§13):
   - The ribbon holds on the rest. A multi-measure rest shows as one wide bar with its count above it (for example, "8").
   - A label above the staff reads **"Tenor enters in 4"**. The number is **measures** remaining before the entrance, and it counts down at each barline. Scrubbing into a rest computes it immediately; pausing freezes it.
@@ -255,7 +283,7 @@ A bottom sheet with three groups and a footer.
   - Skip interval: 5 s (fixed; shown read-only).
   - Repeat: `Off` · `This song` · `All songs`, default Off. Help line for Off: "Plays through to the end of the last song, then stops."
 - **Display**
-  - View mode: Score / Lyrics / Score + Lyrics / Measure (Measure disabled on page-image songs).
+  - View mode: Measure / Score + Lyrics / Score / Lyrics, default Measure (Measure disabled on page-image songs).
   - Lyrics size: A− · 22 · A+.
   - Force landscape: toggle, **on by default**. Help line: "Turn off to follow your phone's orientation."
   - Keep screen on while playing: toggle, on.
@@ -362,6 +390,9 @@ Lyrics are original placeholder text. Don't substitute real lyrics.
   selected loop per song.
 - Playback position is **not** persisted: every song starts at 0:00.
 - A missing or corrupt stored state falls back to defaults.
+- Settings are stored under `choir-rehearsal.settings.v2`. When only the v1 entry exists, every
+  setting carries over except the view mode, so phones that had Score + Lyrics stored as the
+  old default open on Measure once.
 
 ### Interruptions
 
@@ -807,9 +838,9 @@ Launching offline without a song's audio saved shows "This song isn't available 
 - Loops: enable, select, wrap, seek outside, cancel, disable.
 - Offline load, uncached song, update flow.
 - Score render failure with uninterrupted audio.
-- Layouts at 360 × 800 and 412 × 915, plus landscape.
+- Layouts at 360 × 800 and 412 × 915, plus landscape at 915 × 412 and 915 × 356 (a Chrome tab with its address bar).
 - Default Force landscape on: successful runtime lock where supported; immediate music when
-  denied; persisted Settings opt-out; unlock back to device-controlled orientation without
+  denied, with the toggle turned off; persisted Settings opt-out; unlock back to device-controlled orientation without
   resetting playback. No orientation warning or confirmation page.
 
 ### On the Pixel
@@ -820,7 +851,8 @@ Launching offline without a song's audio saved shows "This song isn't available 
 - Keep screen on holds the screen past the phone's timeout.
 - Airplane-mode cold launch after everything is saved.
 - Default landscape in both the Chrome tab and installed PWA. If the browser refuses the lock,
-  confirm that the music remains immediately usable in the current orientation.
+  confirm that the music remains immediately usable in the current orientation and that
+  Settings shows Force landscape off.
 - Turn Force landscape off and on during playback and with a sheet open; playback time and the
   open sheet survive, and off follows the device orientation.
 - Pitch at 0.5× and 1.5×, by ear.
@@ -836,7 +868,8 @@ Every section start against the recording; every interpolated stretch sampled fo
 
 - [ ] Opens directly to the last song at 0:00, paused, playable with one tap. No library or download screen.
 - [ ] Force landscape defaults on and persists; supported contexts lock to landscape, denied
-      contexts go straight to the music, and Settings can disable the force and follow the device.
+      contexts go straight to the music and turn the toggle off, and Settings can disable the
+      force and follow the device.
 - [ ] Header has the title button and ⚙ only; no left chevron.
 - [ ] Switch Song lists the four songs with durations; picking one plays it from 0:00.
 - [ ] ⏮/⏭ step between songs with wrap and the 3 s restart rule, in the app and on the lock screen.

@@ -1,7 +1,10 @@
 // Persisted preferences (spec §11). Only the settings named there are stored; playback position
 // and the running loop never are. A missing or corrupt stored state falls back to defaults.
 
-export const STORAGE_KEY = 'choir-rehearsal.settings.v1';
+export const STORAGE_KEY = 'choir-rehearsal.settings.v2';
+// v1 stored Score + Lyrics as the default view on every phone. Its other settings carry over,
+// but its view doesn't, so every phone opens on Measure, the new default, once.
+export const LEGACY_STORAGE_KEY = 'choir-rehearsal.settings.v1';
 
 export const VIEW_MODES = ['score', 'lyrics', 'score-lyrics', 'measure'];
 export const REPEAT_MODES = ['off', 'one', 'all'];
@@ -12,7 +15,7 @@ export const SPEED_STEP = 0.1;
 
 export const DEFAULTS = Object.freeze({
   lastSongId: null,
-  viewMode: 'score-lyrics',
+  viewMode: 'measure',
   speed: 1,
   lyricsSize: 22,
   repeat: 'off',
@@ -58,8 +61,11 @@ export function sanitizeSettings(raw) {
 export function loadSettings(storage) {
   try {
     const text = storage ? storage.getItem(STORAGE_KEY) : null;
-    if (!text) return sanitizeSettings(null);
-    return sanitizeSettings(JSON.parse(text));
+    if (text) return sanitizeSettings(JSON.parse(text));
+    const legacy = storage ? storage.getItem(LEGACY_STORAGE_KEY) : null;
+    if (!legacy) return sanitizeSettings(null);
+    const { viewMode, ...rest } = JSON.parse(legacy) || {};
+    return sanitizeSettings(rest);
   } catch {
     return sanitizeSettings(null);
   }

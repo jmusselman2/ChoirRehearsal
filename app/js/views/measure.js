@@ -1,16 +1,20 @@
 // Measure Follow-Along (spec §6): one long line of the tenor part that scrolls continuously under
-// a fixed centre playhead, with the faded next measures below. Measure, rest countdown, phrase and
-// loop all come from the timing Position; the only arithmetic here is placing that measure's
-// progress on its rendered width.
+// a fixed playhead (centred in portrait, a third of the way in across a landscape screen; CSS
+// places it), with the faded next measures below in portrait. The staff is one size per phone
+// (staff-size.js), and the next line grows to fill the room the view has. Measure, rest countdown, phrase and loop all come from the
+// timing Position; the only arithmetic here is placing that measure's progress on its rendered
+// width.
 
 import { h, formatRange } from '../format.js';
 import { renderScore, fetchScoreXml, forgetScoreXml } from '../score/osmd.js';
+import { NUMBER_BAND, LYRIC_PAD, BASE_HEIGHT, SCALE_STEP, phoneStaffScale, stepScale } from '../score/staff-size.js';
 import { placeBox } from './score-card.js';
 import { UNSYNCED_NOTICE } from './score.js';
 import { countdownText } from './score-lyrics.js';
 
-const NUMBER_BAND = 14; // px above the SVG for printed measure numbers
-const NEXT_SCALE = 0.62;
+// The faded next line is at least this scale, and grows into spare height in portrait up to
+// full size, so a tall screen spends its room on the music ahead instead of empty space.
+const NEXT_SCALE_MIN = 0.62;
 
 export class MeasureView {
   constructor(el) {
@@ -36,8 +40,9 @@ export class MeasureView {
       h('button', { type: 'button', class: 'pill-btn', text: 'Retry', onclick: () => this.retry() }));
     this.card = h('div', { class: 'paper ribbon-card' }, this.cue, this.viewport, this.next, this.loading, this.failed);
     this.lyric = h('div', { class: 'mv-lyric' });
-    el.append(this.notice, h('div', { class: 'mv' },
-      h('div', { class: 'mv-head' }, this.lineLabel, this.numLabel, this.secLabel), this.card, this.lyric));
+    this.body = h('div', { class: 'mv' },
+      h('div', { class: 'mv-head' }, this.lineLabel, this.numLabel, this.secLabel), this.card, this.lyric);
+    el.append(this.notice, this.body);
     this.visible = false;
     this.ctx = null;
     this.layout = null;
@@ -45,6 +50,7 @@ export class MeasureView {
     this.renderToken = 0;
     this.loopKey = '';
     this.lyricKey = '';
+    this.nextScale = NEXT_SCALE_MIN;
   }
 
   setSong(ctx) {
@@ -53,6 +59,7 @@ export class MeasureView {
     this.renderToken++;
     this.svgHolder.textContent = '';
     this.nextStrip.textContent = '';
+    this.stale = false;
     this.numbers.textContent = '';
     this.loopKey = '';
     this.lyricKey = '';
@@ -73,7 +80,41 @@ export class MeasureView {
 
   show() { this.visible = true; this.ensureRendered(); }
   hide() { this.visible = false; }
-  resize() {}
+  resize() { if (this.visible) this.ensureRendered(); }
+
+  /** Height the view's contents take, including gaps and padding. */
+  usedHeight() {
+    const style = getComputedStyle(this.body);
+    const children = [...this.body.children];
+    return children.reduce((sum, c) => sum + c.offsetHeight, 0)
+      + (Number.parseFloat(style.rowGap) || 0) * (children.length - 1)
+      + Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom);
+  }
+
+  /**
+   * The phone's staff size, from its screen (staff-size.js), so rotating, going fullscreen or the
+   * address bar coming and going never redraws the ribbon. Only if this view can't hold that size
+   * (a loop banner on a short landscape screen, say) does it step down to what fits. CSS's
+   * --ribbon-lines is how many ribbon heights the view must hold (portrait: plus the next line).
+   */
+  targetScale() {
+    const phone = phoneStaffScale(screen.width, screen.height);
+    if (!this.body.clientHeight) return this.layout ? this.layout.scale : phone;
+    const lines = Number.parseFloat(getComputedStyle(this.body).getPropertyValue('--ribbon-lines')) || 1;
+    const ribbon = this.viewport.offsetHeight + this.next.offsetHeight + this.loading.offsetHeight;
+    const room = this.body.clientHeight - (this.usedHeight() - ribbon) - NUMBER_BAND;
+    const baseHeight = (this.layout ? this.layout.height / this.layout.scale : BASE_HEIGHT) + LYRIC_PAD;
+    return Math.min(phone, stepScale(room / (baseHeight * lines)));
+  }
+
+  /** Sizes the faded next line to the height the view has spare. Landscape hides that line. */
+  fitNext() {
+    if (!this.layout || !this.body.clientHeight || !this.next.offsetParent) return;
+    const room = this.next.offsetHeight + this.body.clientHeight - this.usedHeight();
+    const full = this.layout.height + this.lyricPad; // the next line keeps paper under its lyrics too
+    this.nextScale = Math.min(1, Math.max(NEXT_SCALE_MIN, room / full));
+    this.next.style.height = `${Math.ceil(full * this.nextScale)}px`;
+  }
 
   retry() {
     if (!this.ctx || !this.ctx.scoreUrl) return;
@@ -82,16 +123,35 @@ export class MeasureView {
     this.ensureRendered();
   }
 
+  /** Renders the ribbon at the staff size the view has room for, again when that size changes. */
   async ensureRendered() {
     const ctx = this.ctx;
-    if (!ctx || !ctx.scoreUrl || this.layout || this.state === 'failed' || this.rendering === ctx) return;
+    if (!this.visible || !ctx || !ctx.scoreUrl || this.state === 'failed') return;
+    const scale = this.targetScale();
+    if (this.layout && Math.abs(scale - this.layout.scale) < SCALE_STEP / 2) {
+      this.fitNext();
+      return;
+    }
+    if (this.busyToken === this.renderToken) {
+      this.stale = true; // check again once this render lands
+      return;
+    }
     const token = ++this.renderToken;
-    this.rendering = ctx;
+    this.busyToken = token;
+    this.stale = false;
+    // Draw off to the side, so a new size swaps the ribbon in instead of blanking it.
+    const holder = h('div', { class: 'rb-render' });
+    this.el.append(holder);
+    let placed = false;
     try {
       const xml = await fetchScoreXml(ctx.scoreUrl);
       if (token !== this.renderToken) return;
-      const layout = await renderScore(this.svgHolder, xml, { layout: 'line', partId: ctx.partId });
+      const layout = await renderScore(holder, xml, { layout: 'line', partId: ctx.partId, scale });
       if (token !== this.renderToken) return;
+      holder.className = '';
+      this.svgHolder.replaceWith(holder);
+      this.svgHolder = holder;
+      placed = true;
       this.layout = layout;
       this.strip.style.paddingTop = `${NUMBER_BAND}px`;
       this.strip.style.width = `${layout.width}px`;
@@ -104,15 +164,23 @@ export class MeasureView {
       const clone = layout.svg.cloneNode(true);
       this.nextStrip.replaceChildren(clone);
       this.nextStrip.style.width = `${layout.width}px`;
-      this.next.style.height = `${Math.ceil(layout.height * NEXT_SCALE)}px`;
-      this.viewport.style.height = `${layout.height + NUMBER_BAND}px`;
+      // The strip's full height: numbers above, the SVG, and some paper under the lyrics.
+      this.lyricPad = Math.round(LYRIC_PAD * layout.scale);
+      this.stripHeight = NUMBER_BAND + layout.height + this.lyricPad;
+      this.viewport.style.height = `${this.stripHeight}px`;
+      this.loopKey = ''; // the loop band is redrawn at the new size
       this.setState('ready');
+      this.fitNext();
     } catch (error) {
       if (token !== this.renderToken) return;
       console.error('Ribbon render failed:', error);
       this.setState('failed');
     } finally {
-      if (token === this.renderToken) this.rendering = null;
+      if (!placed) holder.remove();
+      if (token === this.renderToken) {
+        this.busyToken = 0;
+        if (this.stale) this.ensureRendered();
+      }
     }
   }
 
@@ -156,27 +224,28 @@ export class MeasureView {
       this.playhead.hidden = true;
       this.next.hidden = true;
       this.strip.style.transform = '';
-      this.nextStrip.style.transform = `scale(${NEXT_SCALE})`;
+      this.nextStrip.style.transform = `scale(${this.nextScale})`;
       this.tint.hidden = true;
       return;
     }
     this.viewport.classList.remove('free');
     this.playhead.hidden = false;
     this.next.hidden = false;
+    const anchor = this.playhead.offsetLeft + 1; // the playhead's centre line
 
     const x = this.playheadX(position, ctx.timeline);
-    this.strip.style.transform = `translate3d(${width / 2 - x}px,0,0)`;
+    this.strip.style.transform = `translate3d(${anchor - x}px,0,0)`;
     // The faded next line starts where the current line's right edge is.
-    this.nextStrip.style.transform = `translate3d(${-(x + width / 2) * NEXT_SCALE + 8}px,0,0) scale(${NEXT_SCALE})`;
+    this.nextStrip.style.transform = `translate3d(${-(x + width - anchor) * this.nextScale + 8}px,0,0) scale(${this.nextScale})`;
 
     const box = L.measures.get(position.measure);
     this.tint.hidden = !box;
-    if (box) placeBox(this.tint, box.x, 0, box.w, L.height + NUMBER_BAND);
+    if (box) placeBox(this.tint, box.x, 0, box.w, this.stripHeight);
 
     // The entrance measure stays faded until "enters in 1" (spec §6).
     const entranceBox = rest && rest.entrance !== null ? L.measures.get(rest.entrance) : null;
     this.fade.hidden = !(entranceBox && rest.countdown > 1);
-    if (!this.fade.hidden) placeBox(this.fade, entranceBox.x, 0, entranceBox.w, L.height + NUMBER_BAND);
+    if (!this.fade.hidden) placeBox(this.fade, entranceBox.x, 0, entranceBox.w, this.stripHeight);
 
     this.drawLoop(position.loop);
   }

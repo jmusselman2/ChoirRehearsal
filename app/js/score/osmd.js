@@ -7,9 +7,11 @@
 
 const OSMD_URL = new URL('../../vendor/opensheetmusicdisplay/opensheetmusicdisplay.min.js', import.meta.url);
 
-/** A 30 px staff: four staff spaces of 10 OSMD units × 0.75 (spec §6). */
+/** A 30 px staff: four staff spaces of 10 OSMD units × 0.75 (spec §6). The ribbon may scale up. */
 export const STAFF_ZOOM = 0.75;
-const UNIT = 10 * STAFF_ZOOM;
+
+const LINE_SPACING = { VoiceSpacingMultiplierVexflow: 0.55, VoiceSpacingAddendVexflow: 2.0, LyricsXPaddingFactorForLongLyrics: 0.5 };
+const PAGE_SPACING = { VoiceSpacingMultiplierVexflow: 0.65, VoiceSpacingAddendVexflow: 2.5, LyricsXPaddingFactorForLongLyrics: 1.0 };
 
 let osmdPromise = null;
 
@@ -59,9 +61,10 @@ export function forgetScoreXml(url) {
  * @param {'line'|'page'} options.layout  one horizontal line (the ribbon) or wrapped systems
  * @param {number} [options.width]  page width in px (page layout)
  * @param {string} [options.partId]  the tenor part; other parts are hidden
+ * @param {number} [options.scale]  staff size relative to the 30 px staff
  * @returns {Promise<ScoreLayout>}
  */
-export async function renderScore(container, xml, { layout, width, partId }) {
+export async function renderScore(container, xml, { layout, width, partId, scale = 1 }) {
   const lib = await loadOsmd();
   container.textContent = '';
   if (layout === 'page') container.style.width = `${Math.max(200, Math.floor(width))}px`;
@@ -88,21 +91,26 @@ export async function renderScore(container, xml, { layout, width, partId }) {
     instruments.forEach((ins) => { ins.Visible = ins.IdString === partId; });
   }
 
-  // Compact spacing from the renderer test (spec §17). The clef is never overridden.
+  // The ribbon keeps the compact spacing from the renderer test (spec §17). Wrapped systems
+  // trade a measure per line for room between syllables: the tight values ran the real
+  // Alleluia lyrics together ("mortalthrongsing") on a phone. The clef is never overridden.
   const rules = osmd.EngravingRules;
-  rules.VoiceSpacingMultiplierVexflow = 0.55;
-  rules.VoiceSpacingAddendVexflow = 2.0;
-  rules.LyricsXPaddingFactorForLongLyrics = 0.5;
+  Object.assign(rules, layout === 'line' ? LINE_SPACING : PAGE_SPACING);
+  // The ribbon reserves the height of its tallest marking for the whole song, and a metronome
+  // mark stacked under a tempo word was the tallest in every song (about 25-35 px above the
+  // staff). Singers follow the recording's tempo, so the ribbon drops the marks and keeps the
+  // words; the page views still show them.
+  if (layout === 'line') rules.MetronomeMarksDrawn = false;
   rules.PageLeftMargin = rules.PageRightMargin = 1;
-  osmd.zoom = STAFF_ZOOM;
+  osmd.zoom = STAFF_ZOOM * scale;
   osmd.render();
 
   const svg = container.querySelector('svg');
   if (!svg) throw new Error('The score rendered nothing');
-  return measureLayout(osmd, svg);
+  return { ...measureLayout(osmd, svg, 10 * osmd.zoom), scale };
 }
 
-function measureLayout(osmd, svg) {
+function measureLayout(osmd, svg, UNIT) {
   const staffIndex = Math.max(0, osmd.Sheet.Instruments.findIndex((ins) => ins.Visible));
   const measures = new Map(); // printed number → box (px)
   const order = [];
