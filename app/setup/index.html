@@ -7,13 +7,139 @@
   <meta name="robots" content="noindex">
   <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192.png">
   <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="setup.css">
+  <script type="module" src="setup.js"></script>
 </head>
-<body>
-  <main class="status" style="height:100%">
-    <h1 class="status-text">Setup page</h1>
-    <p class="status-detail">The desktop timing tool (spec §16) is the next build step. Until then, song timing
-      is edited by hand in each song file.</p>
-    <p class="status-detail"><a href="../" style="color:var(--accent)">Open the player</a></p>
+<body class="setup">
+  <header class="su-top">
+    <h1 class="su-brand">Rehearsal setup</h1>
+    <label class="su-field">Song
+      <select id="songSelect" disabled><option>Loading…</option></select>
+    </label>
+    <span id="formatBadge" class="su-badge" hidden></span>
+    <span id="sampleBadge" class="su-badge su-badge-sample" hidden>Sample songs</span>
+    <span id="draftNote" class="su-draft" role="status" hidden></span>
+    <span class="su-spacer"></span>
+    <span id="validity" class="su-validity" role="status"></span>
+    <button type="button" id="copyJson" class="su-btn" disabled>Copy JSON</button>
+    <button type="button" id="downloadJson" class="su-btn su-btn-primary" disabled>Download JSON</button>
+  </header>
+
+  <p id="loadError" class="su-error" role="alert" hidden></p>
+
+  <main class="su-main" id="main" hidden>
+    <section class="su-left" aria-label="Marking">
+      <div class="su-preview paper" aria-live="off">
+        <div class="su-preview-row">
+          <span id="pvSection" class="su-pv-section">—</span>
+          <span id="pvMeasure" class="su-pv-measure">m. —</span>
+          <span id="pvKind" class="su-pv-kind"></span>
+        </div>
+        <p id="pvLyric" class="su-pv-lyric"></p>
+        <p id="pvRest" class="su-pv-rest"></p>
+      </div>
+
+      <canvas id="strip" class="su-strip" height="96" aria-label="Measure boundaries: solid lines are marked, hollow are inferred. Click to seek."></canvas>
+      <div class="su-legend"><span><i class="lg-solid"></i>marked</span><span><i class="lg-hollow"></i>inferred</span><span><i class="lg-section"></i>section start</span><span><i class="lg-loop"></i>loop</span></div>
+
+      <div class="su-transport">
+        <button type="button" id="playBtn" class="su-btn su-btn-icon" aria-label="Play"><svg class="ico" aria-hidden="true"><use id="playIcon" href="#su-play"/></svg></button>
+        <button type="button" id="back5" class="su-btn">−5 s</button>
+        <button type="button" id="fwd5" class="su-btn">+5 s</button>
+        <span id="clock" class="su-clock">0:00.0 / 0:00.0</span>
+        <input type="range" id="seek" class="range su-seek" min="0" max="0" step="0.01" value="0" aria-label="Position">
+        <label class="su-field su-speed">Speed <input type="range" id="speed" class="range" min="0.5" max="1.5" step="0.1" value="1"> <output id="speedOut">1.0×</output></label>
+      </div>
+
+      <div class="su-markbox">
+        <div class="su-mode" role="group" aria-label="What a tap marks">
+          <div class="seg" id="modeSeg">
+            <button type="button" data-value="sections" aria-pressed="true">Sections</button>
+            <button type="button" data-value="measures" aria-pressed="false">Measures</button>
+          </div>
+          <span id="rangeFields" class="su-range" hidden>
+            <label>m. <input type="number" id="rangeFrom" class="su-num" min="0"></label>
+            <label>to m. <input type="number" id="rangeTo" class="su-num" min="0"></label>
+            <button type="button" id="rangeStart" class="su-btn">Start pass</button>
+          </span>
+        </div>
+        <button type="button" id="markBtn" class="su-mark">Mark <span class="su-kbd">Space</span><span id="markTarget" class="su-mark-target"></span></button>
+        <div class="su-mark-actions">
+          <button type="button" id="skipBtn" class="su-btn">Skip measure</button>
+          <button type="button" id="undoBtn" class="su-btn" disabled>Undo <span class="su-kbd">Ctrl+Z</span></button>
+          <button type="button" id="clearBtn" class="su-btn su-btn-danger">Clear all marks</button>
+        </div>
+        <p id="markHint" class="su-hint"></p>
+      </div>
+    </section>
+
+    <section class="su-right" aria-label="Song data">
+      <div class="su-tabs" role="tablist">
+        <button type="button" role="tab" id="tab-marks" aria-controls="panel-marks" aria-selected="true">Marks</button>
+        <button type="button" role="tab" id="tab-rests" aria-controls="panel-rests" aria-selected="false">Rests</button>
+        <button type="button" role="tab" id="tab-lyrics" aria-controls="panel-lyrics" aria-selected="false">Lyrics</button>
+        <button type="button" role="tab" id="tab-loops" aria-controls="panel-loops" aria-selected="false">Loops</button>
+        <button type="button" role="tab" id="tab-json" aria-controls="panel-json" aria-selected="false">Validate</button>
+      </div>
+
+      <div role="tabpanel" id="panel-marks" class="su-panel" aria-labelledby="tab-marks">
+        <p class="su-hint">Times show tenths; they're stored to 0.01 s. The terminal anchor (the song's end) is added on export.</p>
+        <div id="durationNote" class="su-warn" hidden></div>
+        <table class="su-table" id="marksTable">
+          <thead><tr><th>Measure</th><th>Time</th><th>Source</th><th>Nudge</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div role="tabpanel" id="panel-rests" class="su-panel" aria-labelledby="tab-rests" hidden>
+        <div class="su-panel-actions">
+          <button type="button" id="proposeRests" class="su-btn">Propose from MusicXML</button>
+          <button type="button" id="addRest" class="su-btn">Add rest</button>
+        </div>
+        <div id="restProposal" class="su-proposal" hidden></div>
+        <table class="su-table" id="restsTable">
+          <thead><tr><th>From</th><th>To</th><th>Entrance</th><th>Label</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div role="tabpanel" id="panel-lyrics" class="su-panel" aria-labelledby="tab-lyrics" hidden>
+        <div class="su-panel-actions">
+          <button type="button" id="proposeLyrics" class="su-btn">Propose from MusicXML</button>
+          <button type="button" id="addLyric" class="su-btn">Add phrase</button>
+        </div>
+        <div id="lyricProposal" class="su-proposal" hidden></div>
+        <table class="su-table" id="lyricsTable">
+          <thead><tr><th>Section</th><th>From</th><th>To</th><th>Text</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div role="tabpanel" id="panel-loops" class="su-panel" aria-labelledby="tab-loops" hidden>
+        <form id="loopForm" class="su-loop-form">
+          <label>Name <input id="loopName" required maxlength="60"></label>
+          <label>m. <input type="number" id="loopFrom" class="su-num" required></label>
+          <label>to m. <input type="number" id="loopTo" class="su-num" required></label>
+          <label class="su-grow">Note <input id="loopNote" maxlength="120"></label>
+          <button type="submit" class="su-btn">Add loop</button>
+        </form>
+        <table class="su-table" id="loopsTable">
+          <thead><tr><th>Name</th><th>Range</th><th>Times (computed)</th><th>Note</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div role="tabpanel" id="panel-json" class="su-panel" aria-labelledby="tab-json" hidden>
+        <ul id="problems" class="su-problems"></ul>
+        <textarea id="jsonOut" class="su-json" readonly spellcheck="false" aria-label="Song file JSON"></textarea>
+      </div>
+    </section>
   </main>
+
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="su-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="su-pause" viewBox="0 0 24 24"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" stroke="none"/></symbol>
+  </svg>
+  <audio id="audio" preload="auto"></audio>
 </body>
 </html>

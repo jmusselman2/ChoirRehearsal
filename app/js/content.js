@@ -305,15 +305,17 @@ function httpError(res, url) {
  * Loads content/catalog.json, or content.example/catalog.json when (and only when) the first
  * request returns 404.
  *
+ * @param {Function} fetchFn
+ * @param {string} [base]  prefix for both roots: '' for the player, '../' for the setup page
  * @returns {Promise<{root: string, sample: boolean, catalog: object}>}
  */
-export async function loadCatalog(fetchFn) {
-  let root = CONTENT_ROOT;
+export async function loadCatalog(fetchFn, base = '') {
+  let root = base + CONTENT_ROOT;
   let url = root + CATALOG_FILE;
   let res = await fetchJson(fetchFn, url);
   let sample = false;
   if (res.status === 404) {
-    root = SAMPLE_ROOT;
+    root = base + SAMPLE_ROOT;
     url = root + CATALOG_FILE;
     sample = true;
     res = await fetchJson(fetchFn, url);

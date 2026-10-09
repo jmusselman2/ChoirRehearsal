@@ -214,3 +214,10 @@ test('a broken song file is reported without throwing', async () => {
   const invalid = await loadSong(fakeFetch({ 'content/songs/song-one.json': { body: wrongId } }), 'content/', catalog.songs[0]);
   assert.equal(invalid.error.kind, 'invalid');
 });
+
+test('the setup page loads the same catalogs one level up', async () => {
+  const fetch = fakeFetch({ '../content.example/catalog.json': { body: catalog } });
+  const r = await loadCatalog(fetch, '../');
+  assert.deepEqual({ root: r.root, sample: r.sample }, { root: '../content.example/', sample: true });
+  assert.deepEqual(fetch.calls, ['../content/catalog.json', '../content.example/catalog.json']);
+});

@@ -75,6 +75,22 @@ Every URL inside `app/` is relative, so the same files work at `/` locally and a
 on the live site. On a phone, forward port 8080 from `chrome://inspect`; `localhost` counts as a
 secure context, so Media Session works.
 
+## Timing a song (setup page)
+
+With the server running, open http://localhost:8080/setup/ on a desktop. It loads the same catalog
+as the player (`app/content/`, or the samples on a 404).
+
+1. Pick a song, press play, and tap **Mark** (or Space) as each section begins.
+2. Watch the preview and the boundary strip: solid lines are marked, dotted ones inferred.
+3. Where it drifts (endings, held notes, tenor re-entries), switch to **Measures**, enter a range
+   such as m. 81 to m. 88, and mark each measure; **Skip measure** passes over long rests.
+4. Fix single marks with −0.1 / +0.1, **Re-mark** or **Undo** (Ctrl+Z).
+5. Check the proposed rests and lyric phrases, add any loops, then **Download JSON** and replace
+   the song's file in `app/content/songs/`.
+
+Work in progress is saved in the browser per song until you discard it. The tool never writes
+files itself.
+
 ## Tests
 
 ```powershell
@@ -103,5 +119,6 @@ The output is deterministic. `--no-audio` rebuilds only the JSON and MusicXML.
    Keep-screen-on works there too, and OpenSheetMusicDisplay was chosen as the MusicXML renderer (spec §17).
 2. **Clickable prototype:** done and Pixel-reviewed (`New folder/`, see spec §21).
 3. **Player:** the production shell, sample content, playback/timing/settings core and the score,
-   lyrics, measure and whole-score views are built (finishing guide steps 3–5). The setup page,
-   offline support (service worker) and real-content timing are next.
+   lyrics, measure and whole-score views are built (finishing guide steps 3–5).
+4. **Setup page:** marking, nudges, per-measure passes, rest and phrase proposals, loops,
+   validation and JSON export (step 6). Offline support and real-content timing are next.

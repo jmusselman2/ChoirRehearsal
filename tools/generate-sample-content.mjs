@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { buildTimeline } from '../app/js/timing.js';
 import { readMeasureBeats } from '../app/js/score/measures.js';
 import { validateCatalog, validateSong } from '../app/js/content.js';
+import { formatSongJson } from '../app/js/authoring.js';
 
 const OUT = fileURLToPath(new URL('../app/content.example/', import.meta.url));
 const SAMPLE_RATE = 22050;
@@ -466,24 +467,6 @@ function songFile(def) {
   return song;
 }
 
-/** JSON with small objects and arrays on one line, like the examples in the spec. */
-function inlineJson(value) {
-  if (Array.isArray(value)) return `[${value.map(inlineJson).join(', ')}]`;
-  if (value !== null && typeof value === 'object') {
-    const entries = Object.entries(value);
-    return entries.length ? `{ ${entries.map(([k, v]) => `${JSON.stringify(k)}: ${inlineJson(v)}`).join(', ')} }` : '{}';
-  }
-  return JSON.stringify(value);
-}
-
-function formatJson(value, indent = '') {
-  const inline = inlineJson(value);
-  if (value === null || typeof value !== 'object' || inline.length + indent.length <= 150) return inline;
-  const inner = indent + '  ';
-  if (Array.isArray(value)) return `[\n${value.map((v) => inner + formatJson(v, inner)).join(',\n')}\n${indent}]`;
-  return `{\n${Object.entries(value).map(([k, v]) => `${inner}${JSON.stringify(k)}: ${formatJson(v, inner)}`).join(',\n')}\n${indent}}`;
-}
-
 // ---------------------------------------------------------------------------------------------
 // Audio
 
@@ -540,7 +523,7 @@ function main() {
   };
   const catalogErrors = validateCatalog(catalog);
   if (catalogErrors.length) throw new Error(`catalog: ${catalogErrors.join('; ')}`);
-  writeFileSync(OUT + 'catalog.json', formatJson(catalog) + '\n');
+  writeFileSync(OUT + 'catalog.json', formatSongJson(catalog));
 
   for (const def of SONGS) {
     const song = songFile(def);
@@ -548,7 +531,7 @@ function main() {
     const problems = [...v.fatal, ...v.sync, ...v.score, ...v.warnings];
     if (problems.length) throw new Error(`${def.id}: ${problems.join('; ')}`);
     const xml = musicXml(def, buildMeasures(def));
-    writeFileSync(OUT + `songs/${def.id}.json`, formatJson(song) + '\n');
+    writeFileSync(OUT + `songs/${def.id}.json`, formatSongJson(song));
     writeFileSync(OUT + song.score.src, xml);
     if (withAudio) encodeMp3(renderPcm(def, song, measureStarts(def, song, xml)), OUT + song.audio);
     console.log(`${def.id}: ${song.measures.first}–${song.measures.last}, ${song.timing.anchors.length} anchors${withAudio ? ', audio' : ''}`);
