@@ -47,6 +47,7 @@ if (settings.forceLandscape) requestLandscape();
 const wake = createWakeLock({ navigator, document });
 const layers = createLayers();
 const offline = createOffline({ onStatus: (text) => { $('offlineStatus').textContent = text; } });
+offline.watchVersion((text) => { $('appVersion').textContent = text ? ` · ${text}` : ''; });
 
 // ---- Views ------------------------------------------------------------------------------------
 

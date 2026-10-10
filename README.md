@@ -101,6 +101,9 @@ After the first visit the player saves every song automatically (Settings shows
 (`app/sw.js`) serves it from the next launch, including seeking in saved audio.
 
 - Bump `APP_VERSION` in `app/sw.js` whenever code changes, so phones fetch the new app files.
+  To check a deploy, open `https://jordanmusselman.com/rehearsal/sw.js` (line 14), or look at the
+  bottom of Settings on the phone: it shows the version in use, and "… on next launch" once a
+  newer one has downloaded.
 - Bump `catalogRevision` in `app/content/catalog.json` whenever content changes. Phones download
   the new revision in the background and switch to it on their next launch, never mid-song.
 - On `localhost` the worker fetches app files network-first, so edits show up on reload. To start

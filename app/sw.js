@@ -11,7 +11,7 @@
 // - Requests under setup/ and poc/ are never answered: the setup page always loads fresh, and the
 //   PoC keeps its own worker.
 
-const APP_VERSION = '2026-10-09.7';
+const APP_VERSION = '2026-10-09.8';
 const SHELL_CACHE = `rehearsal-shell-${APP_VERSION}`;
 const META_CACHE = 'rehearsal-meta';
 const CONTENT_PREFIX = 'rehearsal-content-';
@@ -69,6 +69,12 @@ self.addEventListener('activate', (event) => {
       .filter((k) => k.startsWith('rehearsal-shell-') && k !== SHELL_CACHE)
       .map((k) => caches.delete(k)));
   })());
+});
+
+// The page asks which version it came from, to show at the bottom of Settings. APP_VERSION stays
+// defined only here.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'version' && event.ports[0]) event.ports[0].postMessage(APP_VERSION);
 });
 
 self.addEventListener('fetch', (event) => {

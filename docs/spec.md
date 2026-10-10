@@ -293,7 +293,7 @@ A bottom sheet with three groups and a footer.
   - A song with no loops: "No loops for this song yet."
   - Help line: "Loops are assigned by your teacher."
   - Turning the toggle off stops any active loop and hides the chip, but remembers the selected loop.
-- **Footer:** the offline status line (§19) in `text-2`, then the credit line, "Created by Jordan Musselman", in `text-3`.
+- **Footer:** the offline status line (§19) in `text-2`, then the credit line, "Created by Jordan Musselman · Version 2026-10-09.8", in `text-3`. The version is the one this page came from, asked of the service worker that served it (`APP_VERSION` is defined only in `sw.js`). Once a newer version has installed in the background, the line adds "· 2026-10-09.9 on next launch", so a deploy can be confirmed on the phone. Without a service worker (unsupported browser) the version is left off.
 
 ## 9. Loop list sheet
 
@@ -703,7 +703,7 @@ npx http-server app -p 8080 -c-1
 ### Deploying
 
 - With cPanel File Manager, upload the contents of `app/` into `public_html/rehearsal/`, keeping the folders. That includes `content/` and the `.htaccess` dotfile (turn on *Show Hidden Files* to check it's there). `content.example/` can be skipped.
-- Bump `APP_VERSION` in `sw.js` whenever code changes, and `catalogRevision` in `content/catalog.json` whenever content changes, so phones pick up the update (§19).
+- Bump `APP_VERSION` in `sw.js` whenever code changes, and `catalogRevision` in `content/catalog.json` whenever content changes, so phones pick up the update (§19). The bottom of Settings shows the version a phone is running, and a newer one waiting for the next launch.
 - The PoC goes only into `public_html/rehearsal/poc/`. Never put the PoC's `sw.js` in `/rehearsal/` itself: it would take over the app's scope.
 - `.htaccess`: `no-cache` for `.html`, `.js`, `.json` and `.webmanifest`; MIME types for `.mp3` (`audio/mpeg`), `.webmanifest` (`application/manifest+json`), `.musicxml` (`application/vnd.recordare.musicxml+xml`) and `.webp`.
 - After uploading, check Range support on an MP3: `curl.exe -sI -H "Range: bytes=0-1" https://jordanmusselman.com/rehearsal/content/audio/alleluia-tenor.mp3` must return `206 Partial Content`.

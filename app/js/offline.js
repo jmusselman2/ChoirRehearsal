@@ -33,6 +33,33 @@ export function songFiles(root, song) {
   return files;
 }
 
+/** The Settings footer's version line; mentions a newer installed version until it's in use. */
+export function versionText(running, latest) {
+  if (running && latest && latest !== running) return `Version ${running} · ${latest} on next launch`;
+  const shown = running || latest;
+  return shown ? `Version ${shown}` : '';
+}
+
+/** Asks a service worker which app version it serves. Null if it doesn't answer (an older one). */
+export function askVersion(worker, timeoutMs = 2000) {
+  if (!worker || typeof MessageChannel === 'undefined') return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const channel = new MessageChannel();
+    const done = (value) => {
+      clearTimeout(timer);
+      channel.port1.close(); // an open port would keep the channel alive
+      resolve(value);
+    };
+    const timer = setTimeout(() => done(null), timeoutMs);
+    channel.port1.onmessage = (event) => done(typeof event.data === 'string' ? event.data : null);
+    try {
+      worker.postMessage({ type: 'version' }, [channel.port2]);
+    } catch {
+      done(null);
+    }
+  });
+}
+
 export function createOffline({ onStatus = () => {} } = {}) {
   const supported = typeof navigator !== 'undefined' && 'serviceWorker' in navigator
     && typeof caches !== 'undefined' && window.isSecureContext;
@@ -77,6 +104,30 @@ export function createOffline({ onStatus = () => {} } = {}) {
       } catch {
         // Cache storage unavailable: the network still works.
       }
+    },
+
+    /**
+     * Reports the app version for the Settings footer: the one this page came from and, once a
+     * newer one has installed, that one too (it's used from the next launch). Call at launch,
+     * before register(), so the worker that served this page answers before an update replaces
+     * it. The version is defined only in sw.js.
+     */
+    watchVersion(onVersion) {
+      if (!supported) return;
+      const sw = navigator.serviceWorker;
+      const running = askVersion(sw.controller);
+      const report = async () => {
+        try {
+          const registration = await sw.getRegistration();
+          const latest = registration && registration.active ? await askVersion(registration.active) : null;
+          onVersion(versionText(await running, latest));
+        } catch {
+          // No registration yet; the next report fills it in.
+        }
+      };
+      report();
+      sw.ready.then(report);
+      sw.addEventListener('controllerchange', report);
     },
 
     register() {
